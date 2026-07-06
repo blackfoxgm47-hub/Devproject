@@ -204,10 +204,10 @@ function generateTable() {
 function setScore(cabinet, rowIndex, type, score) {
     const hiddenInput = document.querySelector(`input[data-cabinet="${cabinet}"][data-rowindex="${rowIndex}"][data-type="${type}"]`);
     const buttons = document.querySelectorAll(`.score-buttons[data-cabinet="${cabinet}"][data-rowindex="${rowIndex}"][data-type="${type}"] .score-btn`);
-    
+
     if (hiddenInput) {
         hiddenInput.value = score;
-        
+
         // Update data in cabinetRows
         const rowData = cabinetRows[cabinet].rows[rowIndex];
         if (type === 'dryness') {
@@ -217,7 +217,7 @@ function setScore(cabinet, rowIndex, type, score) {
         } else if (type === 'cleanliness') {
             rowData.cleanliness = score;
         }
-        
+
         // Update button styles
         buttons.forEach(btn => {
             btn.classList.remove('active');
@@ -225,7 +225,7 @@ function setScore(cabinet, rowIndex, type, score) {
                 btn.classList.add('active');
             }
         });
-        
+
         // Calculate cabinet average for the type
         if (type === 'dryness') {
             calculateDrynessCabinetAverage(cabinet);
@@ -234,8 +234,11 @@ function setScore(cabinet, rowIndex, type, score) {
         } else if (type === 'cleanliness') {
             calculateCleanlinessCabinetAverage(cabinet);
         }
-        
+
         calculateTotalScore(cabinet, rowIndex);
+
+        // Auto-save data
+        saveData();
     }
 }
 
