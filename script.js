@@ -405,13 +405,8 @@ function updateSummaryDetails() {
             const rows = cabinetRows[cabinet].rows;
             const totalRows = rows.length;
 
-            // Calculate average percentage (max score is 7: 3+2+2)
+            // Get cabinet average from table
             const avgValue = cabinetRows[cabinet].rows[0].cabinetAvg;
-            let avgPercentage = '-';
-            if (avgValue !== '-') {
-                const avg = parseFloat(avgValue);
-                avgPercentage = ((avg / 7) * 100).toFixed(2) + '%';
-            }
 
             html += `
                 <div class="summary-cabinet-item">
@@ -421,8 +416,8 @@ function updateSummaryDetails() {
                         <span class="detail-value">${totalRows}</span>
                     </div>
                     <div class="cabinet-detail">
-                        <span class="detail-label">ค่าเฉลี่ยรวม:</span>
-                        <span class="detail-value">${avgPercentage}</span>
+                        <span class="detail-label">ค่าเฉลี่ยตู้:</span>
+                        <span class="detail-value">${avgValue}</span>
                     </div>
                 </div>
             `;
