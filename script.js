@@ -400,6 +400,7 @@ function updateSummaryDetails() {
 
     let html = '<div class="summary-cabinet-grid">';
 
+    // Cabinet details
     for (let cabinet = 1; cabinet <= NUM_CABINETS; cabinet++) {
         if (cabinetRows[cabinet]) {
             const rows = cabinetRows[cabinet].rows;
@@ -419,18 +420,45 @@ function updateSummaryDetails() {
                         <span class="detail-label">ค่าเฉลี่ยตู้:</span>
                         <span class="detail-value">${avgValue}</span>
                     </div>
-                    <div class="cabinet-detail">
-                        <span class="detail-label">ผลคะแนนรวม:</span>
-                        <span class="detail-value"></span>
-                    </div>
-                    <div class="cabinet-detail">
-                        <span class="detail-label">เวลาออกลูกไก่ที่เหมาะสม:</span>
-                        <span class="detail-value"></span>
-                    </div>
                 </div>
             `;
         }
     }
+
+    html += '</div>';
+
+    // Overall summary section
+    html += '<div class="overall-summary">';
+    html += '<h4 class="overall-title">สรุปรวมทุกตู้</h4>';
+
+    // Calculate percentage: (number of cabinets with avg >= 4.00) / total cabinets * 100
+    let passedCabinets = 0;
+    let totalCabinets = 0;
+    for (let cabinet = 1; cabinet <= NUM_CABINETS; cabinet++) {
+        if (cabinetRows[cabinet]) {
+            totalCabinets++;
+            const avgValue = cabinetRows[cabinet].rows[0].cabinetAvg;
+            if (avgValue !== '-' && parseFloat(avgValue) >= 4.00) {
+                passedCabinets++;
+            }
+        }
+    }
+
+    const percentage = totalCabinets > 0 ? ((passedCabinets / totalCabinets) * 100).toFixed(2) : '0.00';
+
+    html += '<div class="overall-detail">';
+    html += '<span class="detail-label">ผลคะแนนรวม:</span>';
+    html += `<span class="detail-value">${percentage}%</span>`;
+    html += '</div>';
+
+    // Get hatch time from summary input
+    const hatchTimeInput = document.getElementById('hatchTime');
+    const hatchTimeValue = hatchTimeInput ? hatchTimeInput.value : '';
+
+    html += '<div class="overall-detail">';
+    html += '<span class="detail-label">เวลาออกลูกไก่ที่เหมาะสม:</span>';
+    html += `<span class="detail-value">${hatchTimeValue}</span>`;
+    html += '</div>';
 
     html += '</div>';
     summaryDetails.innerHTML = html;

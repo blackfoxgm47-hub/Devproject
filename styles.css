@@ -239,6 +239,32 @@ body {
     font-weight: 600;
 }
 
+/* Overall Summary */
+.overall-summary {
+    margin-top: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ffe0b2;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.overall-title {
+    color: #e65100;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ffe0b2;
+}
+
+.overall-detail {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    font-size: 15px;
+}
+
 /* Summary Section */
 .summary-section {
     background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
