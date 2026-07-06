@@ -63,17 +63,31 @@
                 </tbody>
             </table>
             <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                <button onclick="addCabinetToTable()" class="btn btn-add">เพิ่มตู้เกิด</button>
+                <button onclick="addCabinet()" class="btn btn-add">เพิ่มตู้เกิด</button>
+                <button onclick="deleteCabinet()" class="btn btn-clear">ลบตู้เกิด</button>
                 <button onclick="addRowToCabinet()" class="btn btn-add">เพิ่มคัน</button>
-                <button onclick="deleteCabinetFromTable()" class="btn btn-clear">ลบตู้เกิด</button>
             </div>
         </div>
 
-        <!-- Summary Details -->
+        <!-- Calculation Section -->
         <div class="section calculation-section">
-            <h3 class="section-title">สรุปผลรายละเอียดการบันทึก</h3>
-            <p class="example-text">บันทึกผลการฟักไข่ ไก่ในแต่ละตู้และคัน พร้อมระบุค่าคะแนนและสถานะการผ่านเกณฑ์</p>
-            <p class="example-text">สามารถตรวจสอบผลรวมค่าเฉลี่ยของแต่ละตู้ได้จากตารางและบันทึกสรุปผลในส่วนด้านล่าง</p>
+            <h3 class="section-title">คำนวณเปอร์เซ็นต์</h3>
+            <p class="example-text">ตัวอย่าง: คะแนนที่ได้ / จำนวนทั้งหมด = เปอร์เซ็นต์</p>
+            <div class="calc-inputs">
+                <div class="form-group">
+                    <label for="calcScore">คะแนนที่ได้</label>
+                    <input type="number" id="calcScore" class="input-field small" placeholder="ระบุคะแนน">
+                </div>
+                <div class="form-group">
+                    <label for="calcTotal">จำนวนทั้งหมด</label>
+                    <input type="number" id="calcTotal" class="input-field small" placeholder="ระบุจำนวน">
+                </div>
+                <button onclick="calculatePercentage()" class="btn btn-calc">คำนวณ</button>
+                <div class="form-group">
+                    <label>ผลลัพธ์</label>
+                    <span id="percentageResult" style="font-weight: 600; color: #667eea;">0%</span>
+                </div>
+            </div>
         </div>
 
         <!-- Summary Section -->

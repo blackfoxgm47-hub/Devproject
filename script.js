@@ -37,6 +37,31 @@ document.addEventListener('DOMContentLoaded', function() {
     loadSavedData();
 });
 
+function restoreOriginalTable() {
+    initializeCabinetRows(5);
+    localStorage.removeItem('chickenHatchingData');
+
+    const summaryInput = document.getElementById('summary');
+    const hatchTimeInput = document.getElementById('hatchTime');
+    const calcScoreInput = document.getElementById('calcScore');
+    const calcTotalInput = document.getElementById('calcTotal');
+    const percentageResult = document.getElementById('percentageResult');
+
+    if (summaryInput) summaryInput.value = '';
+    if (hatchTimeInput) hatchTimeInput.value = '';
+    if (calcScoreInput) calcScoreInput.value = '';
+    if (calcTotalInput) calcTotalInput.value = '';
+    if (percentageResult) percentageResult.textContent = '0';
+
+    generateTable();
+    for (let cabinet = 1; cabinet <= NUM_CABINETS; cabinet++) {
+        calculateDrynessCabinetAverage(cabinet);
+        calculateMembraneCabinetAverage(cabinet);
+        calculateCleanlinessCabinetAverage(cabinet);
+        calculateCabinetAverage(cabinet);
+    }
+}
+
 // Generate table rows
 function generateTable() {
     const tableBody = document.getElementById('tableBody');
@@ -376,15 +401,21 @@ function calculatePercentage() {
 
 // Save data to localStorage
 function saveData() {
+    const summaryInput = document.getElementById('summary');
+    const hatchTimeInput = document.getElementById('hatchTime');
+    const calcScoreInput = document.getElementById('calcScore');
+    const calcTotalInput = document.getElementById('calcTotal');
+    const percentageResult = document.getElementById('percentageResult');
+
     const data = {
         summary: {
-            text: document.getElementById('summary').value,
-            hatchTime: document.getElementById('hatchTime').value
+            text: summaryInput ? summaryInput.value : '',
+            hatchTime: hatchTimeInput ? hatchTimeInput.value : ''
         },
         calculation: {
-            score: document.getElementById('calcScore').value,
-            total: document.getElementById('calcTotal').value,
-            percentage: document.getElementById('percentageResult').textContent
+            score: calcScoreInput ? calcScoreInput.value : '',
+            total: calcTotalInput ? calcTotalInput.value : '',
+            percentage: percentageResult ? percentageResult.textContent : '0'
         },
         cabinetData: {}
     };
@@ -422,7 +453,7 @@ function saveDataWithAlert() {
 // Load data from localStorage
 function loadSavedData() {
     const savedData = localStorage.getItem('chickenHatchingData');
-    
+
     if (savedData) {
         const data = JSON.parse(savedData);
         const savedCabinetCount = data.cabinetData
@@ -436,10 +467,10 @@ function loadSavedData() {
             for (let cabinet = 1; cabinet <= NUM_CABINETS; cabinet++) {
                 if (data.cabinetData[cabinet]) {
                     const cabData = data.cabinetData[cabinet];
-                    
+
                     // Set hatcher
                     cabinetRows[cabinet].hatcher = cabData.hatcher || '';
-                    
+
                     // Reset and load rows with all data
                     cabinetRows[cabinet].rows = [];
                     if (cabData.rows && cabData.rows.length > 0) {
@@ -462,14 +493,20 @@ function loadSavedData() {
             }
         }
 
-        // Load summary
-        document.getElementById('summary').value = data.summary.text || '';
-        document.getElementById('hatchTime').value = data.summary.hatchTime || '';
+        const summaryInput = document.getElementById('summary');
+        const hatchTimeInput = document.getElementById('hatchTime');
+        const calcScoreInput = document.getElementById('calcScore');
+        const calcTotalInput = document.getElementById('calcTotal');
+        const percentageResult = document.getElementById('percentageResult');
 
-        // Load calculation
-        document.getElementById('calcScore').value = data.calculation.score || '';
-        document.getElementById('calcTotal').value = data.calculation.total || '';
-        document.getElementById('percentageResult').textContent = data.calculation.percentage || '0';
+        if (summaryInput) summaryInput.value = data.summary.text || '';
+        if (hatchTimeInput) hatchTimeInput.value = data.summary.hatchTime || '';
+        if (calcScoreInput) calcScoreInput.value = data.calculation.score || '';
+        if (calcTotalInput) calcTotalInput.value = data.calculation.total || '';
+        if (percentageResult) percentageResult.textContent = data.calculation.percentage || '0';
+    } else {
+        // No saved data, initialize with default
+        initializeCabinetRows(5);
     }
 
     // Generate table AFTER loading all data (or with default data if no saved data)
@@ -499,9 +536,12 @@ function clearData() {
     document.getElementById('hatchTime').value = '';
 
     // Clear calculation
-    document.getElementById('calcScore').value = '';
-    document.getElementById('calcTotal').value = '';
-    document.getElementById('percentageResult').textContent = '0';
+    const calcScoreInput = document.getElementById('calcScore');
+    const calcTotalInput = document.getElementById('calcTotal');
+    const percentageResult = document.getElementById('percentageResult');
+    if (calcScoreInput) calcScoreInput.value = '';
+    if (calcTotalInput) calcTotalInput.value = '';
+    if (percentageResult) percentageResult.textContent = '0';
 
     // Reset cabinetRows to default (3 rows per cabinet)
     initializeCabinetRows(5);
@@ -520,18 +560,21 @@ function clearData() {
     alert('ล้างข้อมูลเรียบร้อย!');
 }
 
-// Add a new cabinet to the table
-function addCabinetToTable() {
-    const newCabinetNumber = NUM_CABINETS + 1;
+// Add a new cabinet
+function addCabinet() {
+    if (!confirm('คุณต้องการเพิ่มตู้เกิดใหม่หรือไม่?')) {
+        return;
+    }
 
+    const newCabinetNumber = NUM_CABINETS + 1;
     cabinetRows[newCabinetNumber] = {
         hatcher: '',
         rows: []
     };
 
-    for (let rowIndex = 1; rowIndex <= NUM_ROWS; rowIndex++) {
+    for (let j = 1; j <= NUM_ROWS; j++) {
         cabinetRows[newCabinetNumber].rows.push({
-            id: rowIndex,
+            id: j,
             dryness: '',
             membrane: '',
             cleanliness: '',
@@ -545,19 +588,19 @@ function addCabinetToTable() {
     }
 
     NUM_CABINETS = newCabinetNumber;
-
     generateTable();
-    calculateDrynessCabinetAverage(newCabinetNumber);
-    calculateMembraneCabinetAverage(newCabinetNumber);
-    calculateCleanlinessCabinetAverage(newCabinetNumber);
-    calculateCabinetAverage(newCabinetNumber);
     saveData();
 
-    alert(`เพิ่มตู้เกิดใหม่เรียบร้อย! (ตู้ที่ ${newCabinetNumber})`);
+    alert(`เพิ่มตู้ที่ ${newCabinetNumber} เรียบร้อย! (ทั้งหมด ${NUM_CABINETS} ตู้)`);
 }
 
-// Delete a cabinet from the table
-function deleteCabinetFromTable() {
+// Delete a cabinet
+function deleteCabinet() {
+    if (NUM_CABINETS <= 1) {
+        alert('ต้องมีอย่างน้อย 1 ตู้เกิด');
+        return;
+    }
+
     const cabinetNumber = prompt(`กรุณาระบุหมายเลขตู้ที่ต้องการลบ (1-${NUM_CABINETS})`);
 
     if (cabinetNumber === null) {
@@ -571,35 +614,29 @@ function deleteCabinetFromTable() {
         return;
     }
 
-    if (!confirm(`คุณต้องการลบตู้ที่ ${cabinet} ออกจากตารางหรือไม่?`)) {
+    if (!confirm(`คุณต้องการลบตู้ที่ ${cabinet} หรือไม่?`)) {
         return;
     }
 
+    // Remove cabinet from data structure
     delete cabinetRows[cabinet];
 
-    const reindexedCabinets = {};
+    // Reindex cabinets to maintain sequential numbering
+    const newCabinetRows = {};
     let newIndex = 1;
-
-    Object.keys(cabinetRows)
-        .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
-        .forEach((key) => {
-            reindexedCabinets[newIndex] = cabinetRows[key];
-            newIndex += 1;
-        });
-
-    cabinetRows = reindexedCabinets;
-    NUM_CABINETS = Object.keys(cabinetRows).length;
+    for (let i = 1; i <= NUM_CABINETS; i++) {
+        if (cabinetRows[i]) {
+            newCabinetRows[newIndex] = cabinetRows[i];
+            newIndex++;
+        }
+    }
+    cabinetRows = newCabinetRows;
+    NUM_CABINETS = newIndex - 1;
 
     generateTable();
-    for (let i = 1; i <= NUM_CABINETS; i++) {
-        calculateDrynessCabinetAverage(i);
-        calculateMembraneCabinetAverage(i);
-        calculateCleanlinessCabinetAverage(i);
-        calculateCabinetAverage(i);
-    }
     saveData();
 
-    alert(`ลบตู้ที่ ${cabinet} ออกจากตารางเรียบร้อยแล้ว`);
+    alert(`ลบตู้ที่ ${cabinet} เรียบร้อย! (ทั้งหมด ${NUM_CABINETS} ตู้)`);
 }
 
 // Add a new row to a specific cabinet
