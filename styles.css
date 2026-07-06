@@ -230,6 +230,11 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+.btn-add {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    color: white;
+}
+
 .btn-save {
     background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
     color: white;

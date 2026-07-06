@@ -555,3 +555,88 @@ function addCabinetToTable() {
 
     alert(`เพิ่มตู้เกิดใหม่เรียบร้อย! (ตู้ที่ ${newCabinetNumber})`);
 }
+
+// Delete a cabinet from the table
+function deleteCabinetFromTable() {
+    const cabinetNumber = prompt(`กรุณาระบุหมายเลขตู้ที่ต้องการลบ (1-${NUM_CABINETS})`);
+
+    if (cabinetNumber === null) {
+        return;
+    }
+
+    const cabinet = parseInt(cabinetNumber, 10);
+
+    if (Number.isNaN(cabinet) || cabinet < 1 || cabinet > NUM_CABINETS) {
+        alert(`กรุณากรอกหมายเลขตู้ที่ถูกต้อง (1-${NUM_CABINETS})`);
+        return;
+    }
+
+    if (!confirm(`คุณต้องการลบตู้ที่ ${cabinet} ออกจากตารางหรือไม่?`)) {
+        return;
+    }
+
+    delete cabinetRows[cabinet];
+
+    const reindexedCabinets = {};
+    let newIndex = 1;
+
+    Object.keys(cabinetRows)
+        .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+        .forEach((key) => {
+            reindexedCabinets[newIndex] = cabinetRows[key];
+            newIndex += 1;
+        });
+
+    cabinetRows = reindexedCabinets;
+    NUM_CABINETS = Object.keys(cabinetRows).length;
+
+    generateTable();
+    for (let i = 1; i <= NUM_CABINETS; i++) {
+        calculateDrynessCabinetAverage(i);
+        calculateMembraneCabinetAverage(i);
+        calculateCleanlinessCabinetAverage(i);
+        calculateCabinetAverage(i);
+    }
+    saveData();
+
+    alert(`ลบตู้ที่ ${cabinet} ออกจากตารางเรียบร้อยแล้ว`);
+}
+
+// Add a new row to a specific cabinet
+function addRowToCabinet() {
+    const cabinetNumber = prompt(`กรุณาระบุหมายเลขตู้ที่ต้องการเพิ่มคัน (1-${NUM_CABINETS})`);
+
+    if (cabinetNumber === null) {
+        return;
+    }
+
+    const cabinet = parseInt(cabinetNumber, 10);
+
+    if (Number.isNaN(cabinet) || cabinet < 1 || cabinet > NUM_CABINETS) {
+        alert(`กรุณากรอกหมายเลขตู้ที่ถูกต้อง (1-${NUM_CABINETS})`);
+        return;
+    }
+
+    const newRowId = cabinetRows[cabinet].rows.length + 1;
+    cabinetRows[cabinet].rows.push({
+        id: newRowId,
+        dryness: '',
+        membrane: '',
+        cleanliness: '',
+        totalScore: '-',
+        drynessAvg: '-',
+        membraneAvg: '-',
+        cleanlinessAvg: '-',
+        cabinetAvg: '-',
+        status: '-'
+    });
+
+    generateTable();
+    calculateDrynessCabinetAverage(cabinet);
+    calculateMembraneCabinetAverage(cabinet);
+    calculateCleanlinessCabinetAverage(cabinet);
+    calculateCabinetAverage(cabinet);
+    saveData();
+
+    alert(`เพิ่มคันใหม่ให้ตู้ที่ ${cabinet} เรียบร้อย! (ทั้งหมด ${cabinetRows[cabinet].rows.length} คัน)`);
+}
