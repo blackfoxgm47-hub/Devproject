@@ -255,6 +255,11 @@ body {
     color: white;
 }
 
+.btn-add {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    color: white;
+}
+
 .btn-delete {
     padding: 6px 12px;
     background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
