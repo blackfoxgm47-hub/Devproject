@@ -419,6 +419,14 @@ function updateSummaryDetails() {
                         <span class="detail-label">ค่าเฉลี่ยตู้:</span>
                         <span class="detail-value">${avgValue}</span>
                     </div>
+                    <div class="cabinet-detail">
+                        <span class="detail-label">ผลคะแนนรวม:</span>
+                        <span class="detail-value"></span>
+                    </div>
+                    <div class="cabinet-detail">
+                        <span class="detail-label">เวลาออกลูกไก่ที่เหมาะสม:</span>
+                        <span class="detail-value"></span>
+                    </div>
                 </div>
             `;
         }
