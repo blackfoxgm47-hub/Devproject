@@ -426,7 +426,7 @@ function updateSummaryDetails() {
 
     // Overall summary section
     html += '<div class="overall-summary">';
-    html += '<h4 class="overall-title">สรุปรวมทุกตู้</h4>';
+    html += '<h4 class="overall-title">สรุปผลคะแนนและเวลาออกที่เหมาะสม</h4>';
 
     // Calculate percentage: (number of cabinets with avg >= 4.00) / total cabinets * 100
     let passedCabinets = 0;
