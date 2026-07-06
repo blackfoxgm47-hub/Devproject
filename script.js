@@ -43,15 +43,9 @@ function restoreOriginalTable() {
 
     const summaryInput = document.getElementById('summary');
     const hatchTimeInput = document.getElementById('hatchTime');
-    const calcScoreInput = document.getElementById('calcScore');
-    const calcTotalInput = document.getElementById('calcTotal');
-    const percentageResult = document.getElementById('percentageResult');
 
     if (summaryInput) summaryInput.value = '';
     if (hatchTimeInput) hatchTimeInput.value = '';
-    if (calcScoreInput) calcScoreInput.value = '';
-    if (calcTotalInput) calcTotalInput.value = '';
-    if (percentageResult) percentageResult.textContent = '0';
 
     generateTable();
     for (let cabinet = 1; cabinet <= NUM_CABINETS; cabinet++) {
@@ -70,47 +64,47 @@ function generateTable() {
     for (let cabinet = 1; cabinet <= NUM_CABINETS; cabinet++) {
         const rows = cabinetRows[cabinet].rows;
         const rowCount = rows.length;
-        
+
         for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
             const row = rowIndex + 1;
             const rowData = rows[rowIndex];
             const tr = document.createElement('tr');
-            
+
             // Merge hatcher cell for first row only
-            const hatcherCell = row === 1 
-                ? `<td rowspan="${rowCount}" class="hatcher-cell"><input type="text" class="input-field hatcher-input" data-cabinet="${cabinet}" id="hatcher-${cabinet}" placeholder="กรอกข้อมูลตู้เกิด" value="${cabinetRows[cabinet].hatcher}"></td>` 
+            const hatcherCell = row === 1
+                ? `<td rowspan="${rowCount}" class="hatcher-cell"><input type="text" class="input-field hatcher-input" data-cabinet="${cabinet}" id="hatcher-${cabinet}" placeholder="กรอกข้อมูลตู้เกิด" value="${cabinetRows[cabinet].hatcher}"></td>`
                 : '';
-            
+
             // Merge cabinet cell for first row only
-            const cabinetCell = row === 1 
-                ? `<td rowspan="${rowCount}">${cabinet}</td>` 
+            const cabinetCell = row === 1
+                ? `<td rowspan="${rowCount}">${cabinet}</td>`
                 : '';
-            
+
             // Merge dryness average cell for first row only
-            const drynessAvgCell = row === 1 
-                ? `<td rowspan="${rowCount}" class="readonly" id="dryness-avg-cabinet-${cabinet}">${rowData.drynessAvg}</td>` 
+            const drynessAvgCell = row === 1
+                ? `<td rowspan="${rowCount}" class="readonly" id="dryness-avg-cabinet-${cabinet}">${rowData.drynessAvg}</td>`
                 : '';
-            
+
             // Merge membrane average cell for first row only
-            const membraneAvgCell = row === 1 
-                ? `<td rowspan="${rowCount}" class="readonly" id="membrane-avg-cabinet-${cabinet}">${rowData.membraneAvg}</td>` 
+            const membraneAvgCell = row === 1
+                ? `<td rowspan="${rowCount}" class="readonly" id="membrane-avg-cabinet-${cabinet}">${rowData.membraneAvg}</td>`
                 : '';
-            
+
             // Merge cleanliness average cell for first row only
-            const cleanlinessAvgCell = row === 1 
-                ? `<td rowspan="${rowCount}" class="readonly" id="cleanliness-avg-cabinet-${cabinet}">${rowData.cleanlinessAvg}</td>` 
+            const cleanlinessAvgCell = row === 1
+                ? `<td rowspan="${rowCount}" class="readonly" id="cleanliness-avg-cabinet-${cabinet}">${rowData.cleanlinessAvg}</td>`
                 : '';
-            
+
             // Merge average cell for first row only
-            const avgCell = row === 1 
-                ? `<td rowspan="${rowCount}" class="readonly" id="avg-cabinet-${cabinet}">${rowData.cabinetAvg}</td>` 
+            const avgCell = row === 1
+                ? `<td rowspan="${rowCount}" class="readonly" id="avg-cabinet-${cabinet}">${rowData.cabinetAvg}</td>`
                 : '';
-            
+
             // Merge status cell for first row only
-            const statusCell = row === 1 
-                ? `<td rowspan="${rowCount}" class="readonly" id="status-cabinet-${cabinet}">${rowData.status}</td>` 
+            const statusCell = row === 1
+                ? `<td rowspan="${rowCount}" class="readonly" id="status-cabinet-${cabinet}">${rowData.status}</td>`
                 : '';
-            
+
             tr.innerHTML = `
                 ${hatcherCell}
                 ${cabinetCell}
@@ -146,7 +140,7 @@ function generateTable() {
                 <td><button onclick="deleteRow(${cabinet}, ${rowIndex})" class="btn-delete">ลบ</button></td>
             `;
             tableBody.appendChild(tr);
-            
+
             // Add event listener to hatcher input
             if (row === 1) {
                 const hatcherInput = tr.querySelector('input.hatcher-input');
@@ -157,7 +151,7 @@ function generateTable() {
                     });
                 }
             }
-            
+
             // Load saved data for this row from cabinetRows
             if (rowData) {
                 // Set dryness value and button state
@@ -171,7 +165,7 @@ function generateTable() {
                         }
                     });
                 }
-                
+
                 // Set membrane value and button state
                 if (rowData.membrane !== '') {
                     const membraneInput = tr.querySelector(`input[data-type="membrane"]`);
@@ -183,7 +177,7 @@ function generateTable() {
                         }
                     });
                 }
-                
+
                 // Set cleanliness value and button state
                 if (rowData.cleanliness !== '') {
                     const cleanlinessInput = tr.querySelector(`input[data-type="cleanliness"]`);
@@ -198,6 +192,9 @@ function generateTable() {
             }
         }
     }
+
+    // Update summary details after generating table
+    updateSummaryDetails();
 }
 
 // Set score from clickable button
@@ -336,26 +333,29 @@ function calculateTotalScore(cabinet, rowIndex) {
 function calculateCabinetAverage(cabinet) {
     const totalScores = [];
     const rows = cabinetRows[cabinet].rows;
-    
+
     rows.forEach((rowData, rowIndex) => {
         if (rowData.totalScore !== '-') {
             totalScores.push(parseFloat(rowData.totalScore));
         }
     });
-    
+
     const avg = calculateAverage(totalScores);
     const avgValue = avg !== null ? avg.toFixed(2) : '-';
     const status = avg !== null && avg >= 4.00 ? 'ผ่าน' : (avg !== null ? 'ไม่ผ่าน' : '-');
-    
+
     // Update all rows' cabinetAvg and status
     rows.forEach(rowData => {
         rowData.cabinetAvg = avgValue;
         rowData.status = status;
     });
-    
+
     // Update DOM
     document.getElementById(`avg-cabinet-${cabinet}`).textContent = avgValue;
     document.getElementById(`status-cabinet-${cabinet}`).textContent = status;
+
+    // Update summary details
+    updateSummaryDetails();
 }
 
 // Delete a specific row
@@ -390,35 +390,58 @@ function calculateAverage(values) {
 
 // Calculate percentage from example section
 function calculatePercentage() {
-    const score = parseFloat(document.getElementById('calcScore').value);
-    const total = parseFloat(document.getElementById('calcTotal').value);
+    // Function kept for backward compatibility, but no longer used
+}
 
-    if (isNaN(score) || isNaN(total) || total === 0) {
-        alert('กรุณากรอกคะแนนและจำนวนให้ถูกต้อง');
-        return;
+// Update summary details
+function updateSummaryDetails() {
+    const summaryDetails = document.getElementById('summaryDetails');
+    if (!summaryDetails) return;
+
+    let html = '<div class="summary-cabinet-grid">';
+
+    for (let cabinet = 1; cabinet <= NUM_CABINETS; cabinet++) {
+        if (cabinetRows[cabinet]) {
+            const rows = cabinetRows[cabinet].rows;
+            const totalRows = rows.length;
+
+            // Calculate average percentage (max score is 7: 3+2+2)
+            const avgValue = cabinetRows[cabinet].rows[0].cabinetAvg;
+            let avgPercentage = '-';
+            if (avgValue !== '-') {
+                const avg = parseFloat(avgValue);
+                avgPercentage = ((avg / 7) * 100).toFixed(2) + '%';
+            }
+
+            html += `
+                <div class="summary-cabinet-item">
+                    <div class="cabinet-header">ตู้ที่ ${cabinet}</div>
+                    <div class="cabinet-detail">
+                        <span class="detail-label">จำนวนคัน:</span>
+                        <span class="detail-value">${totalRows}</span>
+                    </div>
+                    <div class="cabinet-detail">
+                        <span class="detail-label">ค่าเฉลี่ยรวม:</span>
+                        <span class="detail-value">${avgPercentage}</span>
+                    </div>
+                </div>
+            `;
+        }
     }
 
-    const percentage = (score / total) * 100;
-    document.getElementById('percentageResult').textContent = percentage.toFixed(2);
+    html += '</div>';
+    summaryDetails.innerHTML = html;
 }
 
 // Save data to localStorage
 function saveData() {
     const summaryInput = document.getElementById('summary');
     const hatchTimeInput = document.getElementById('hatchTime');
-    const calcScoreInput = document.getElementById('calcScore');
-    const calcTotalInput = document.getElementById('calcTotal');
-    const percentageResult = document.getElementById('percentageResult');
 
     const data = {
         summary: {
             text: summaryInput ? summaryInput.value : '',
             hatchTime: hatchTimeInput ? hatchTimeInput.value : ''
-        },
-        calculation: {
-            score: calcScoreInput ? calcScoreInput.value : '',
-            total: calcTotalInput ? calcTotalInput.value : '',
-            percentage: percentageResult ? percentageResult.textContent : '0'
         },
         cabinetData: {}
     };
@@ -426,7 +449,7 @@ function saveData() {
     // Collect all data from cabinetRows
     for (let cabinet = 1; cabinet <= NUM_CABINETS; cabinet++) {
         const hatcherInput = document.getElementById(`hatcher-${cabinet}`);
-        
+
         data.cabinetData[cabinet] = {
             hatcher: hatcherInput ? hatcherInput.value : cabinetRows[cabinet].hatcher,
             rows: cabinetRows[cabinet].rows.map(rowData => ({
