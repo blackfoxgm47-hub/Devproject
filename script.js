@@ -41,10 +41,7 @@ function restoreOriginalTable() {
     initializeCabinetRows(5);
     localStorage.removeItem('chickenHatchingData');
 
-    const summaryInput = document.getElementById('summary');
     const hatchTimeInput = document.getElementById('hatchTime');
-
-    if (summaryInput) summaryInput.value = '';
     if (hatchTimeInput) hatchTimeInput.value = '';
 
     generateTable();
@@ -451,13 +448,9 @@ function updateSummaryDetails() {
     html += `<span class="detail-value">${percentage}%</span>`;
     html += '</div>';
 
-    // Get hatch time from summary input
-    const hatchTimeInput = document.getElementById('hatchTime');
-    const hatchTimeValue = hatchTimeInput ? hatchTimeInput.value : '';
-
     html += '<div class="overall-detail">';
     html += '<span class="detail-label">เวลาออกลูกไก่ที่เหมาะสม:</span>';
-    html += `<span class="detail-value">${hatchTimeValue}</span>`;
+    html += `<span class="detail-value"></span>`;
     html += '</div>';
 
     html += '</div>';
@@ -466,14 +459,7 @@ function updateSummaryDetails() {
 
 // Save data to localStorage
 function saveData() {
-    const summaryInput = document.getElementById('summary');
-    const hatchTimeInput = document.getElementById('hatchTime');
-
     const data = {
-        summary: {
-            text: summaryInput ? summaryInput.value : '',
-            hatchTime: hatchTimeInput ? hatchTimeInput.value : ''
-        },
         cabinetData: {}
     };
 
@@ -550,17 +536,8 @@ function loadSavedData() {
             }
         }
 
-        const summaryInput = document.getElementById('summary');
         const hatchTimeInput = document.getElementById('hatchTime');
-        const calcScoreInput = document.getElementById('calcScore');
-        const calcTotalInput = document.getElementById('calcTotal');
-        const percentageResult = document.getElementById('percentageResult');
-
-        if (summaryInput) summaryInput.value = data.summary.text || '';
-        if (hatchTimeInput) hatchTimeInput.value = data.summary.hatchTime || '';
-        if (calcScoreInput) calcScoreInput.value = data.calculation.score || '';
-        if (calcTotalInput) calcTotalInput.value = data.calculation.total || '';
-        if (percentageResult) percentageResult.textContent = data.calculation.percentage || '0';
+        if (hatchTimeInput) hatchTimeInput.value = data.hatchTime || '';
     } else {
         // No saved data, initialize with default
         initializeCabinetRows(5);
@@ -587,18 +564,6 @@ function clearData() {
         const hatcherInput = document.getElementById(`hatcher-${cabinet}`);
         if (hatcherInput) hatcherInput.value = '';
     }
-
-    // Clear summary
-    document.getElementById('summary').value = '';
-    document.getElementById('hatchTime').value = '';
-
-    // Clear calculation
-    const calcScoreInput = document.getElementById('calcScore');
-    const calcTotalInput = document.getElementById('calcTotal');
-    const percentageResult = document.getElementById('percentageResult');
-    if (calcScoreInput) calcScoreInput.value = '';
-    if (calcTotalInput) calcTotalInput.value = '';
-    if (percentageResult) percentageResult.textContent = '0';
 
     // Reset cabinetRows to default (3 rows per cabinet)
     initializeCabinetRows(5);
