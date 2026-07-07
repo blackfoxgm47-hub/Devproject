@@ -444,7 +444,7 @@ function updateSummaryDetails() {
     const percentage = totalCabinets > 0 ? ((passedCabinets / totalCabinets) * 100).toFixed(2) : '0.00';
 
     html += '<div class="overall-detail">';
-    html += '<span class="detail-label">ผลคะแนนรวม:</span>';
+    html += '<span class="detail-label">%จำนวนตู้ที่มีคะแนน >4 คะแนน:</span>';
     html += `<span class="detail-value">${percentage}%</span>`;
     html += '</div>';
 
