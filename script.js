@@ -43,14 +43,27 @@ document.addEventListener('DOMContentLoaded', function() {
 // Save start production time
 function saveStartProdTime() {
     const startProdTimeInput = document.getElementById('startProdTime');
+    const statusElement = document.getElementById('startProdStatus');
+
     if (startProdTimeInput) {
-        startProdTime = startProdTimeInput.value;
+        const selectedTime = startProdTimeInput.value;
+
+        // Check if time is selected
+        if (!selectedTime) {
+            if (statusElement) {
+                statusElement.textContent = 'กรุณาเลือกเวลาก่อนบันทึก';
+                statusElement.style.color = '#f44336';
+            }
+            return;
+        }
+
+        startProdTime = selectedTime;
         saveData();
 
-        // Show status message
-        const statusElement = document.getElementById('startProdStatus');
+        // Show success status message
         if (statusElement) {
             statusElement.textContent = `บันทึกเริ่มเวลาที่ ${startProdTime} แล้ว`;
+            statusElement.style.color = '#4caf50';
         }
     }
 }
