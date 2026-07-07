@@ -10,6 +10,21 @@
     <div class="container">
         <h1 class="title">แบบบันทึกการฟักไข่ไก่</h1>
         
+        <!-- Start Production Time -->
+        <div class="section criteria-section">
+            <h2 class="section-title">เวลา Start prod</h2>
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                <select id="startProdTime" class="input-field" style="flex: 1;">
+                    <option value="">เลือกเวลา</option>
+                    <option value="10:00 น.">10:00 น.</option>
+                    <option value="12:00 น.">12:00 น.</option>
+                    <option value="14:00 น.">14:00 น.</option>
+                    <option value="15:00 น.">15:00 น.</option>
+                </select>
+                <button onclick="saveStartProdTime()" class="btn btn-save">บันทึก</button>
+            </div>
+        </div>
+
         <!-- Evaluation Criteria -->
         <div class="section criteria-section">
             <h2 class="section-title">เกณฑ์ในการประเมิน</h2>

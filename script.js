@@ -5,6 +5,9 @@ const NUM_ROWS = 3;
 // Data structure to store rows for each cabinet
 let cabinetRows = {};
 
+// Start production time
+let startProdTime = '';
+
 function initializeCabinetRows(cabinetCount = NUM_CABINETS) {
     NUM_CABINETS = cabinetCount;
     cabinetRows = {};
@@ -36,6 +39,16 @@ initializeCabinetRows();
 document.addEventListener('DOMContentLoaded', function() {
     loadSavedData();
 });
+
+// Save start production time
+function saveStartProdTime() {
+    const startProdTimeInput = document.getElementById('startProdTime');
+    if (startProdTimeInput) {
+        startProdTime = startProdTimeInput.value;
+        saveData();
+        alert('บันทึกเวลา Start prod เรียบร้อย!');
+    }
+}
 
 function restoreOriginalTable() {
     initializeCabinetRows(5);
@@ -449,6 +462,11 @@ function updateSummaryDetails() {
     html += '</div>';
 
     html += '<div class="overall-detail">';
+    html += '<span class="detail-label">เวลา Start prod:</span>';
+    html += `<span class="detail-value">${startProdTime || '-'}</span>`;
+    html += '</div>';
+
+    html += '<div class="overall-detail">';
     html += '<span class="detail-label">เวลาออกลูกไก่ที่เหมาะสม:</span>';
     html += `<span class="detail-value"></span>`;
     html += '</div>';
@@ -460,6 +478,7 @@ function updateSummaryDetails() {
 // Save data to localStorage
 function saveData() {
     const data = {
+        startProdTime: startProdTime,
         cabinetData: {}
     };
 
@@ -499,6 +518,14 @@ function loadSavedData() {
 
     if (savedData) {
         const data = JSON.parse(savedData);
+
+        // Load start production time
+        if (data.startProdTime) {
+            startProdTime = data.startProdTime;
+            const startProdTimeInput = document.getElementById('startProdTime');
+            if (startProdTimeInput) startProdTimeInput.value = startProdTime;
+        }
+
         const savedCabinetCount = data.cabinetData
             ? Object.keys(data.cabinetData).reduce((max, key) => Math.max(max, parseInt(key, 10) || 0), NUM_CABINETS)
             : NUM_CABINETS;
@@ -558,6 +585,11 @@ function clearData() {
     if (!confirm('คุณต้องการล้างข้อมูลทั้งหมดหรือไม่?')) {
         return;
     }
+
+    // Clear start production time
+    startProdTime = '';
+    const startProdTimeInput = document.getElementById('startProdTime');
+    if (startProdTimeInput) startProdTimeInput.value = '';
 
     // Clear hatcher data
     for (let cabinet = 1; cabinet <= NUM_CABINETS; cabinet++) {
