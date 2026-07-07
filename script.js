@@ -46,7 +46,12 @@ function saveStartProdTime() {
     if (startProdTimeInput) {
         startProdTime = startProdTimeInput.value;
         saveData();
-        alert('บันทึกเวลา Start prod เรียบร้อย!');
+
+        // Show status message
+        const statusElement = document.getElementById('startProdStatus');
+        if (statusElement) {
+            statusElement.textContent = `บันทึกลงเวลาที่ ${startProdTime} แล้ว`;
+        }
     }
 }
 
