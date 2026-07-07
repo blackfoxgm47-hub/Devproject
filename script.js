@@ -50,7 +50,7 @@ function saveStartProdTime() {
         // Show status message
         const statusElement = document.getElementById('startProdStatus');
         if (statusElement) {
-            statusElement.textContent = `บันทึกลงเวลาที่ ${startProdTime} แล้ว`;
+            statusElement.textContent = `บันทึกเริ่มเวลาที่ ${startProdTime} แล้ว`;
         }
     }
 }
