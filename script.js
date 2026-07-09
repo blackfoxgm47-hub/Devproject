@@ -820,13 +820,10 @@ function saveData() {
     }
 
     localStorage.setItem('chickenHatchingData', JSON.stringify(data));
-
-    // Save to history
-    saveToHistory(data);
 }
 
 // Save record to history
-function saveToHistory(data) {
+function saveToHistory() {
     const HISTORY_KEY = 'chickenHatchingHistory';
     const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
 
@@ -852,7 +849,7 @@ function saveToHistory(data) {
 
     const record = {
         timestamp: new Date().toISOString(),
-        startProdTime: data.startProdTime,
+        startProdTime: startProdTime,
         cabinetRows: cabinetRows,
         summary: summary,
         passedCabinets: passedCabinets,
@@ -873,7 +870,41 @@ function saveToHistory(data) {
 // Save data with alert (for user action)
 function saveDataWithAlert() {
     saveData();
+    saveToHistory();
     alert('บันทึกข้อมูลเรียบร้อย!');
+    resetAllData();
+}
+
+// Reset all data without confirmation
+function resetAllData() {
+    // Clear start production time
+    startProdTime = '';
+    const startProdTimeInput = document.getElementById('startProdTime');
+    if (startProdTimeInput) startProdTimeInput.value = '';
+
+    // Clear hatcher data
+    for (let cabinet = 1; cabinet <= NUM_CABINETS; cabinet++) {
+        const hatcherInput = document.getElementById(`hatcher-${cabinet}`);
+        if (hatcherInput) hatcherInput.value = '';
+    }
+
+    // Reset cabinetRows to default (3 rows per cabinet)
+    initializeCabinetRows(5);
+
+    // Refresh table and recalculate
+    generateTable();
+    for (let cabinet = 1; cabinet <= NUM_CABINETS; cabinet++) {
+        calculateDrynessCabinetAverage(cabinet);
+        calculateMembraneCabinetAverage(cabinet);
+        calculateCleanlinessCabinetAverage(cabinet);
+        calculateCabinetAverage(cabinet);
+    }
+
+    // Clear localStorage
+    localStorage.removeItem('chickenHatchingData');
+
+    // Update summary details
+    updateSummaryDetails();
 }
 
 // Load data from localStorage
