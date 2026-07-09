@@ -72,8 +72,81 @@ function saveStartProdTime() {
 function calculateHatchTime(passedCabinets, percentage, startProdTime) {
     const pct = parseFloat(percentage);
 
-    // Check if start prod is at 12:00 น.
-    if (startProdTime === '12:00 น.') {
+    // Check if start prod is at 14:00 น.
+    if (startProdTime === '14:00 น.') {
+        // Special case: 65%-50% for 2-12 cabinets
+        if (passedCabinets >= 2 && passedCabinets <= 12 && pct >= 50 && pct <= 65) {
+            return '14:00 น.';
+        }
+
+        // Start prod at 14:00 น.
+        switch (passedCabinets) {
+            case 2:
+                if (pct >= 66 && pct <= 100) return '13:00 น.';
+                if (pct >= 35 && pct <= 49) return '15:00 น.';
+                break;
+            case 3:
+                if (pct >= 66 && pct <= 100) return '13:00 น.';
+                if (pct >= 35 && pct <= 49) return '16:00 น.';
+                break;
+            case 4:
+                if (pct >= 94 && pct <= 100) return '12:00 น.';
+                if (pct >= 66 && pct <= 93) return '13:00 น.';
+                if (pct >= 38 && pct <= 49) return '16:00 น.';
+                if (pct >= 35 && pct <= 37) return '17:00 น.';
+                break;
+            case 5:
+                if (pct >= 75 && pct <= 100) return '12:00 น.';
+                if (pct >= 66 && pct <= 74) return '13:00 น.';
+                if (pct >= 35 && pct <= 49) return '17:00 น.';
+                break;
+            case 6:
+                if (pct >= 66 && pct <= 100) return '12:00 น.';
+                if (pct >= 42 && pct <= 49) return '17:00 น.';
+                if (pct >= 35 && pct <= 41) return '18:00 น.';
+                break;
+            case 7:
+                if (pct >= 90 && pct <= 100) return '11:00 น.';
+                if (pct >= 66 && pct <= 89) return '12:00 น.';
+                if (pct >= 36 && pct <= 49) return '18:00 น.';
+                if (pct === 35) return '19:00 น.';
+                break;
+            case 8:
+                if (pct >= 79 && pct <= 100) return '11:00 น.';
+                if (pct >= 66 && pct <= 78) return '12:00 น.';
+                if (pct >= 44 && pct <= 49) return '18:00 น.';
+                if (pct >= 35 && pct <= 43) return '19:00 น.';
+                break;
+            case 9:
+                if (pct >= 98 && pct <= 100) return '10:00 น.';
+                if (pct >= 70 && pct <= 97) return '11:00 น.';
+                if (pct >= 66 && pct <= 69) return '12:00 น.';
+                if (pct >= 39 && pct <= 49) return '19:00 น.';
+                if (pct >= 35 && pct <= 38) return '20:00 น.';
+                break;
+            case 10:
+                if (pct >= 88 && pct <= 100) return '10:00 น.';
+                if (pct >= 66 && pct <= 87) return '11:00 น.';
+                if (pct >= 45 && pct <= 49) return '19:00 น.';
+                if (pct >= 35 && pct <= 44) return '20:00 น.';
+                break;
+            case 11:
+                if (pct >= 80 && pct <= 100) return '10:00 น.';
+                if (pct >= 66 && pct <= 79) return '11:00 น.';
+                if (pct >= 41 && pct <= 49) return '20:00 น.';
+                if (pct >= 35 && pct <= 40) return '21:00 น.';
+                break;
+            case 12:
+                if (pct >= 94 && pct <= 100) return '9:00 น.';
+                if (pct >= 73 && pct <= 93) return '10:00 น.';
+                if (pct >= 66 && pct <= 72) return '11:00 น.';
+                if (pct >= 46 && pct <= 49) return '20:00 น.';
+                if (pct >= 38 && pct <= 45) return '21:00 น.';
+                if (pct >= 35 && pct <= 37) return '22:00 น.';
+                break;
+        }
+    } else if (startProdTime === '12:00 น.') {
+        // Check if start prod is at 12:00 น.
         // Special case: 65%-50% for 2-12 cabinets
         if (passedCabinets >= 2 && passedCabinets <= 12 && pct >= 50 && pct <= 65) {
             return '12:00 น.';
