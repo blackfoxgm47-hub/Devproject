@@ -38,6 +38,7 @@ initializeCabinetRows();
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     loadSavedData();
+    setupErrorRemoval();
 });
 
 // Save start production time
@@ -867,8 +868,78 @@ function saveToHistory() {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
 }
 
+// Validate data before saving
+function validateData() {
+    let isValid = true;
+    let errorMessage = '';
+
+    // Clear all error states
+    document.querySelectorAll('.input-field').forEach(field => {
+        field.classList.remove('error');
+    });
+
+    // Check start production time
+    const startProdTimeInput = document.getElementById('startProdTime');
+    if (!startProdTime || startProdTime === '') {
+        if (startProdTimeInput) {
+            startProdTimeInput.classList.add('error');
+        }
+        isValid = false;
+        errorMessage = 'กรุณาเลือกเวลา Start prod';
+    }
+
+    // Check hatcher inputs
+    let emptyHatchers = [];
+    for (let cabinet = 1; cabinet <= NUM_CABINETS; cabinet++) {
+        const hatcherInput = document.getElementById(`hatcher-${cabinet}`);
+        if (hatcherInput && (!hatcherInput.value || hatcherInput.value.trim() === '')) {
+            hatcherInput.classList.add('error');
+            emptyHatchers.push(cabinet);
+            isValid = false;
+        }
+    }
+
+    if (emptyHatchers.length > 0) {
+        if (errorMessage) {
+            errorMessage += ' และ ';
+        }
+        errorMessage += `กรุณากรอกข้อมูลตู้เกิด (ตู้ที่ ${emptyHatchers.join(', ')})`;
+    }
+
+    if (!isValid) {
+        alert(errorMessage);
+    }
+
+    return isValid;
+}
+
+// Remove error state when user starts typing
+function setupErrorRemoval() {
+    // Remove error from startProdTime when changed
+    const startProdTimeInput = document.getElementById('startProdTime');
+    if (startProdTimeInput) {
+        startProdTimeInput.addEventListener('change', function() {
+            this.classList.remove('error');
+        });
+    }
+
+    // Remove error from hatcher inputs when changed
+    for (let cabinet = 1; cabinet <= NUM_CABINETS; cabinet++) {
+        const hatcherInput = document.getElementById(`hatcher-${cabinet}`);
+        if (hatcherInput) {
+            hatcherInput.addEventListener('input', function() {
+                this.classList.remove('error');
+            });
+        }
+    }
+}
+
 // Save data with alert (for user action)
 function saveDataWithAlert() {
+    if (!validateData()) {
+        return;
+    }
+
     saveData();
     saveToHistory();
     alert('บันทึกข้อมูลเรียบร้อย!');
