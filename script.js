@@ -820,6 +820,54 @@ function saveData() {
     }
 
     localStorage.setItem('chickenHatchingData', JSON.stringify(data));
+
+    // Save to history
+    saveToHistory(data);
+}
+
+// Save record to history
+function saveToHistory(data) {
+    const HISTORY_KEY = 'chickenHatchingHistory';
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+
+    // Calculate passed cabinets and percentage
+    let passedCabinets = 0;
+    let totalCabinets = 0;
+    for (let cabinet = 1; cabinet <= NUM_CABINETS; cabinet++) {
+        if (cabinetRows[cabinet]) {
+            totalCabinets++;
+            const avgValue = cabinetRows[cabinet].rows[0].cabinetAvg;
+            if (avgValue !== '-' && parseFloat(avgValue) >= 4.00) {
+                passedCabinets++;
+            }
+        }
+    }
+
+    const percentage = totalCabinets > 0 ? Math.round((passedCabinets / totalCabinets) * 100) : 0;
+    const hatchTime = calculateHatchTime(passedCabinets, percentage, startProdTime);
+
+    // Get summary text
+    const summaryInput = document.getElementById('summary');
+    const summary = summaryInput ? summaryInput.value : '';
+
+    const record = {
+        timestamp: new Date().toISOString(),
+        startProdTime: data.startProdTime,
+        cabinetRows: cabinetRows,
+        summary: summary,
+        passedCabinets: passedCabinets,
+        totalCabinets: totalCabinets,
+        hatchTime: hatchTime
+    };
+
+    history.unshift(record); // Add to beginning of array
+
+    // Keep only last 50 records
+    if (history.length > 50) {
+        history.pop();
+    }
+
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
 }
 
 // Save data with alert (for user action)
