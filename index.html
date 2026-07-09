@@ -7,8 +7,20 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1 class="title">แบบบันทึกการฟักไข่ไก่</h1>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>เมนู</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="menu-item active">
+                <a href="#" class="menu-link">บันทึกการฟักไข่ไก่</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <h1 class="title">แบบบันทึกการฟักไข่ไก่</h1>
         
         <!-- Evaluation Criteria -->
         <div class="section criteria-section">
@@ -100,6 +112,7 @@
             <button onclick="clearData()" class="btn btn-clear">ล้างข้อมูล</button>
             <button onclick="window.print()" class="btn btn-print">พิมพ์</button>
         </div>
+    </div>
     </div>
 
     <script src="script.js"></script>
