@@ -431,7 +431,7 @@ function generateTable() {
 
             // Merge status cell for first row only
             const statusCell = row === 1
-                ? `<td rowspan="${rowCount}" class="readonly" id="status-cabinet-${cabinet}">${rowData.status}</td>`
+                ? `<td rowspan="${rowCount}" class="readonly" id="status-cabinet-${cabinet}"><span class="${getStatusClass(rowData.status)}">${rowData.status}</span></td>`
                 : '';
 
             tr.innerHTML = `
@@ -681,10 +681,17 @@ function calculateCabinetAverage(cabinet) {
 
     // Update DOM
     document.getElementById(`avg-cabinet-${cabinet}`).textContent = avgValue;
-    document.getElementById(`status-cabinet-${cabinet}`).textContent = status;
+    document.getElementById(`status-cabinet-${cabinet}`).innerHTML = `<span class="${getStatusClass(status)}">${status}</span>`;
 
     // Update summary details
     updateSummaryDetails();
+}
+
+// Get the CSS class for a status value (ผ่าน = green, ไม่ผ่าน = red)
+function getStatusClass(status) {
+    if (status === 'ผ่าน') return 'status-pass';
+    if (status === 'ไม่ผ่าน') return 'status-fail';
+    return '';
 }
 
 // Delete a specific row
@@ -848,7 +855,15 @@ function saveToHistory() {
     const summaryInput = document.getElementById('summary');
     const summary = summaryInput ? summaryInput.value : '';
 
+    // Determine the running sequence number (a persistent counter, not array position).
+    // This guarantees the first-ever record keeps number 1 forever, and every
+    // new record gets the next number up, regardless of where it's displayed.
+    const SEQUENCE_KEY = 'chickenHatchingHistorySeq';
+    let nextSequence = parseInt(localStorage.getItem(SEQUENCE_KEY) || '0', 10) + 1;
+    localStorage.setItem(SEQUENCE_KEY, String(nextSequence));
+
     const record = {
+        sequenceNumber: nextSequence,
         timestamp: new Date().toISOString(),
         startProdTime: startProdTime,
         cabinetRows: cabinetRows,
@@ -858,7 +873,7 @@ function saveToHistory() {
         hatchTime: hatchTime
     };
 
-    history.unshift(record); // Add to beginning of array
+    history.unshift(record); // Add to beginning of array (newest shown first)
 
     // Keep only last 50 records
     if (history.length > 50) {

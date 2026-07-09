@@ -13,8 +13,16 @@ function loadHistory() {
     }
 
     let html = '';
+    // history[0] is the newest record (unshift is used when saving), so it's shown on top.
+    // The sequence number reflects the order the record was originally saved in
+    // (oldest = 1, counting up), not its position in this array.
+    const totalRecords = history.length;
     history.forEach((record, index) => {
-        const sequenceNumber = index + 1;
+        // Use the persistent sequence number saved with the record; fall back to a
+        // calculated value for older records that were saved before this field existed.
+        const sequenceNumber = record.sequenceNumber !== undefined
+            ? record.sequenceNumber
+            : totalRecords - index;
         const date = new Date(record.timestamp).toLocaleString('th-TH');
         const passedCabinets = record.passedCabinets || 0;
         const totalCabinets = record.totalCabinets || 0;
@@ -76,7 +84,8 @@ function viewDetail(index) {
                 html += '<div class="summary-cabinet-item">';
                 html += `<div class="cabinet-header">ตู้ที่ ${cabinet}</div>`;
                 html += `<div class="cabinet-detail"><span class="detail-label">ค่าเฉลี่ย:</span><span class="detail-value">${avg}</span></div>`;
-                html += `<div class="cabinet-detail"><span class="detail-label">สถานะ:</span><span class="detail-value">${status}</span></div>`;
+                const statusClass = status === 'ผ่าน' ? 'status-pass' : (status === 'ไม่ผ่าน' ? 'status-fail' : '');
+                html += `<div class="cabinet-detail"><span class="detail-label">สถานะ:</span><span class="detail-value ${statusClass}">${status}</span></div>`;
                 html += '</div>';
             }
         }

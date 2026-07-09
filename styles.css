@@ -252,6 +252,16 @@ body {
     color: #495057;
 }
 
+.status-pass {
+    color: #2e7d32;
+    font-weight: 700;
+}
+
+.status-fail {
+    color: #d32f2f;
+    font-weight: 700;
+}
+
 /* Calculation Section */
 .calculation-section {
     background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
