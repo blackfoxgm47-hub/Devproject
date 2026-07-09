@@ -8,12 +8,13 @@ function loadHistory() {
     const historyBody = document.getElementById('historyBody');
     
     if (history.length === 0) {
-        historyBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #6c757d;">ไม่มีข้อมูลประวัติ</td></tr>';
+        historyBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #6c757d;">ไม่มีข้อมูลประวัติ</td></tr>';
         return;
     }
 
     let html = '';
     history.forEach((record, index) => {
+        const sequenceNumber = index + 1;
         const date = new Date(record.timestamp).toLocaleString('th-TH');
         const passedCabinets = record.passedCabinets || 0;
         const totalCabinets = record.totalCabinets || 0;
@@ -22,6 +23,7 @@ function loadHistory() {
 
         html += `
             <tr>
+                <td>${sequenceNumber}</td>
                 <td>${date}</td>
                 <td>${record.startProdTime || '-'}</td>
                 <td>${totalCabinets}</td>
