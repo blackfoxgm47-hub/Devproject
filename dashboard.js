@@ -36,6 +36,44 @@ function updateSummaryCards(history) {
     document.getElementById('avgPassRate').textContent = avgPassRate + '%';
     document.getElementById('totalCabinets').textContent = totalCabinets;
     document.getElementById('totalPassed').textContent = totalPassed;
+
+    // Draw pass rate pie chart
+    drawPassRateChart(avgPassRate);
+}
+
+// Draw pass rate pie chart
+function drawPassRateChart(passRate) {
+    const canvas = document.getElementById('passRateChart');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const container = canvas.parentElement;
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = Math.min(centerX, centerY) - 5;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw background circle
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.fill();
+
+    // Draw pass rate arc
+    const startAngle = -Math.PI / 2;
+    const endAngle = startAngle + (passRate / 100) * 2 * Math.PI;
+
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineCap = 'round';
+    ctx.stroke();
 }
 
 // Update pass trend chart
