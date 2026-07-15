@@ -214,13 +214,12 @@ function updateRecentRecords(history) {
     const tbody = document.getElementById('recentRecords');
 
     if (recentRecords.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #6c757d;">ไม่มีข้อมูล</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #6c757d;">ไม่มีข้อมูล</td></tr>';
         return;
     }
 
     let html = '';
     recentRecords.forEach((record, index) => {
-        const sequenceNumber = record.sequenceNumber !== undefined ? record.sequenceNumber : history.length - index;
         const date = new Date(record.timestamp).toLocaleString('th-TH');
         const passedCabinets = record.passedCabinets || 0;
         const totalCabinets = record.totalCabinets || 0;
@@ -229,7 +228,6 @@ function updateRecentRecords(history) {
 
         html += `
             <tr>
-                <td>${sequenceNumber}</td>
                 <td>${date}</td>
                 <td>${record.startProdTime || '-'}</td>
                 <td>${totalCabinets}</td>
