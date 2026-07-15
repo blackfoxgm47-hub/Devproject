@@ -35,6 +35,7 @@ function initializeCabinetRows(cabinetCount = NUM_CABINETS) {
 }
 
 initializeCabinetRows();
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     loadSavedData();
