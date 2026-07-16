@@ -62,11 +62,16 @@ async function viewDetail(id) {
     html += '</div>';
 
     // Cabinet details - ผลลัพธ์ของแต่ละตู้
-    if (record.cabinet_rows) {
+    let cabinetRows = record.cabinet_rows;
+    if (typeof cabinetRows === 'string') {
+        cabinetRows = JSON.parse(cabinetRows);
+    }
+
+    if (cabinetRows) {
         html += '<div class="summary-cabinet-grid">';
         for (let cabinet = 1; cabinet <= 12; cabinet++) {
-            if (record.cabinet_rows[cabinet]) {
-                const cabinetData = record.cabinet_rows[cabinet];
+            if (cabinetRows[cabinet]) {
+                const cabinetData = cabinetRows[cabinet];
                 const avg = cabinetData.rows[0]?.cabinetAvg || '-';
                 const status = cabinetData.rows[0]?.status || '-';
 

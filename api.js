@@ -1,4 +1,6 @@
 // API Configuration
+// เปลี่ยน localhost เป็น IP address ของเครื่องที่รัน server
+// เช่น: const API_BASE_URL = 'http://192.168.1.100:3000/api';
 const API_BASE_URL = 'http://localhost:3000/api';
 
 // API Functions
