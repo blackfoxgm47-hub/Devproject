@@ -831,11 +831,8 @@ function saveData() {
     localStorage.setItem('chickenHatchingData', JSON.stringify(data));
 }
 
-// Save record to history
-function saveToHistory() {
-    const HISTORY_KEY = 'chickenHatchingHistory';
-    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-
+// Save record to history (using Firebase)
+async function saveToHistory() {
     // Calculate passed cabinets and percentage
     let passedCabinets = 0;
     let totalCabinets = 0;
@@ -856,32 +853,22 @@ function saveToHistory() {
     const summaryInput = document.getElementById('summary');
     const summary = summaryInput ? summaryInput.value : '';
 
-    // Determine the running sequence number (a persistent counter, not array position).
-    // This guarantees the first-ever record keeps number 1 forever, and every
-    // new record gets the next number up, regardless of where it's displayed.
-    const SEQUENCE_KEY = 'chickenHatchingHistorySeq';
-    let nextSequence = parseInt(localStorage.getItem(SEQUENCE_KEY) || '0', 10) + 1;
-    localStorage.setItem(SEQUENCE_KEY, String(nextSequence));
-
     const record = {
-        sequenceNumber: nextSequence,
         timestamp: new Date().toISOString(),
-        startProdTime: startProdTime,
-        cabinetRows: cabinetRows,
+        start_prod_time: startProdTime,
+        cabinet_rows: cabinetRows,
         summary: summary,
-        passedCabinets: passedCabinets,
-        totalCabinets: totalCabinets,
-        hatchTime: hatchTime
+        passed_cabinets: passedCabinets,
+        total_cabinets: totalCabinets,
+        hatch_time: hatchTime
     };
 
-    history.unshift(record); // Add to beginning of array (newest shown first)
-
-    // Keep only last 50 records
-    if (history.length > 50) {
-        history.pop();
+    try {
+        await firebaseApi.createRecord(record);
+    } catch (error) {
+        console.error('Error saving to history:', error);
+        throw error;
     }
-
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
 }
 
 // Validate data before saving
@@ -951,13 +938,13 @@ function setupErrorRemoval() {
 }
 
 // Save data with alert (for user action)
-function saveDataWithAlert() {
+async function saveDataWithAlert() {
     if (!validateData()) {
         return;
     }
 
     saveData();
-    saveToHistory();
+    await saveToHistory();
     alert('บันทึกข้อมูลเรียบร้อย!');
     resetAllData();
 }

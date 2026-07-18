@@ -1,10 +1,8 @@
 // Dashboard Management for Chicken Hatching Records
 
-const HISTORY_KEY = 'chickenHatchingHistory';
-
 // Load dashboard data
-function loadDashboard() {
-    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+async function loadDashboard() {
+    const history = await firebaseApi.getRecords();
 
     // Update summary cards
     updateSummaryCards(history);
@@ -26,8 +24,8 @@ function updateSummaryCards(history) {
     let totalPassed = 0;
 
     history.forEach(record => {
-        totalCabinets += record.totalCabinets || 0;
-        totalPassed += record.passedCabinets || 0;
+        totalCabinets += record.total_cabinets || 0;
+        totalPassed += record.passed_cabinets || 0;
     });
 
     const avgPassRate = totalCabinets > 0 ? Math.round((totalPassed / totalCabinets) * 100) : 0;
@@ -155,13 +153,13 @@ function updateCabinetStatistics(history) {
     let cabinetCount = 0;
 
     history.forEach(record => {
-        if (record.cabinetRows) {
-            for (let cabinet in record.cabinetRows) {
+        if (record.cabinet_rows) {
+            for (let cabinet in record.cabinet_rows) {
                 if (!cabinetStats[cabinet]) {
                     cabinetStats[cabinet] = { total: 0, passed: 0 };
                 }
                 cabinetStats[cabinet].total++;
-                const avg = record.cabinetRows[cabinet].rows[0]?.cabinetAvg;
+                const avg = record.cabinet_rows[cabinet].rows[0]?.cabinetAvg;
                 if (avg !== '-' && parseFloat(avg) >= 4.00) {
                     cabinetStats[cabinet].passed++;
                 }
@@ -221,15 +219,15 @@ function updateRecentRecords(history) {
     let html = '';
     recentRecords.forEach((record, index) => {
         const date = new Date(record.timestamp).toLocaleString('th-TH');
-        const passedCabinets = record.passedCabinets || 0;
-        const totalCabinets = record.totalCabinets || 0;
+        const passedCabinets = record.passed_cabinets || 0;
+        const totalCabinets = record.total_cabinets || 0;
         const percentage = totalCabinets > 0 ? Math.round((passedCabinets / totalCabinets) * 100) : 0;
-        const hatchTime = record.hatchTime || '-';
+        const hatchTime = record.hatch_time || '-';
 
         html += `
             <tr>
                 <td>${date}</td>
-                <td>${record.startProdTime || '-'}</td>
+                <td>${record.start_prod_time || '-'}</td>
                 <td>${totalCabinets}</td>
                 <td>${percentage}% (${passedCabinets}/${totalCabinets})</td>
                 <td>${hatchTime}</td>
@@ -246,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Handle window resize for chart
-window.addEventListener('resize', function() {
-    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+window.addEventListener('resize', async function() {
+    const history = await firebaseApi.getRecords();
     updatePassTrendChart(history);
 });

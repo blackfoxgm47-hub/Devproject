@@ -1,10 +1,8 @@
 // History Management for Chicken Hatching Records
 
-const HISTORY_KEY = 'chickenHatchingHistory';
-
-// Load history from localStorage
-function loadHistory() {
-    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+// Load history from Firebase
+async function loadHistory() {
+    const history = await firebaseApi.getRecords();
     const historyBody = document.getElementById('historyBody');
 
     if (history.length === 0) {
@@ -13,33 +11,25 @@ function loadHistory() {
     }
 
     let html = '';
-    // history[0] is the newest record (unshift is used when saving), so it's shown on top.
-    // The sequence number reflects the order the record was originally saved in
-    // (oldest = 1, counting up), not its position in this array.
-    const totalRecords = history.length;
     history.forEach((record, index) => {
-        // Use the persistent sequence number saved with the record; fall back to a
-        // calculated value for older records that were saved before this field existed.
-        const sequenceNumber = record.sequenceNumber !== undefined
-            ? record.sequenceNumber
-            : totalRecords - index;
+        const sequenceNumber = record.sequence_number;
         const date = new Date(record.timestamp).toLocaleString('th-TH');
-        const passedCabinets = record.passedCabinets || 0;
-        const totalCabinets = record.totalCabinets || 0;
+        const passedCabinets = record.passed_cabinets || 0;
+        const totalCabinets = record.total_cabinets || 0;
         const percentage = totalCabinets > 0 ? Math.round((passedCabinets / totalCabinets) * 100) : 0;
-        const hatchTime = record.hatchTime || '-';
+        const hatchTime = record.hatch_time || '-';
 
         html += `
             <tr>
                 <td>${sequenceNumber}</td>
                 <td>${date}</td>
-                <td>${record.startProdTime || '-'}</td>
+                <td>${record.start_prod_time || '-'}</td>
                 <td>${totalCabinets}</td>
                 <td>${percentage}% (${passedCabinets}/${totalCabinets})</td>
                 <td>${hatchTime}</td>
                 <td>
-                    <button onclick="viewDetail(${index})" class="btn btn-add" style="padding: 6px 12px; font-size: 12px;">ดู</button>
-                    <button onclick="deleteHistory(${index})" class="btn btn-delete">ลบ</button>
+                    <button onclick="viewDetail('${record.id}')" class="btn btn-add" style="padding: 6px 12px; font-size: 12px;">ดู</button>
+                    <button onclick="deleteHistory('${record.id}')" class="btn btn-delete">ลบ</button>
                 </td>
             </tr>
         `;
@@ -49,9 +39,8 @@ function loadHistory() {
 }
 
 // View detail of a specific record
-function viewDetail(index) {
-    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-    const record = history[index];
+async function viewDetail(id) {
+    const record = await firebaseApi.getRecord(id);
 
     if (!record) return;
 
@@ -64,20 +53,25 @@ function viewDetail(index) {
     html += '<div class="overall-summary">';
     html += '<div class="overall-title">ข้อมูลสรุป</div>';
     html += `<div class="overall-detail"><span class="detail-label">วันที่:</span><span class="detail-value">${new Date(record.timestamp).toLocaleString('th-TH')}</span></div>`;
-    html += `<div class="overall-detail"><span class="detail-label">เวลา Start prod:</span><span class="detail-value">${record.startProdTime || '-'}</span></div>`;
-    html += `<div class="overall-detail"><span class="detail-label">จำนวนตู้ทั้งหมด:</span><span class="detail-value">${record.totalCabinets}</span></div>`;
-    html += `<div class="overall-detail"><span class="detail-label">จำนวนตู้ที่ผ่าน:</span><span class="detail-value">${record.passedCabinets}</span></div>`;
-    const percentage = record.totalCabinets > 0 ? Math.round((record.passedCabinets / record.totalCabinets) * 100) : 0;
+    html += `<div class="overall-detail"><span class="detail-label">เวลา Start prod:</span><span class="detail-value">${record.start_prod_time || '-'}</span></div>`;
+    html += `<div class="overall-detail"><span class="detail-label">จำนวนตู้ทั้งหมด:</span><span class="detail-value">${record.total_cabinets}</span></div>`;
+    html += `<div class="overall-detail"><span class="detail-label">จำนวนตู้ที่ผ่าน:</span><span class="detail-value">${record.passed_cabinets}</span></div>`;
+    const percentage = record.total_cabinets > 0 ? Math.round((record.passed_cabinets / record.total_cabinets) * 100) : 0;
     html += `<div class="overall-detail"><span class="detail-label">%จำนวนตู้ที่มีคะแนน ≥4 คะแนน:</span><span class="detail-value">${percentage}%</span></div>`;
-    html += `<div class="overall-detail"><span class="detail-label">เวลาออกลูกไก่:</span><span class="detail-value">${record.hatchTime || '-'}</span></div>`;
+    html += `<div class="overall-detail"><span class="detail-label">เวลาออกลูกไก่:</span><span class="detail-value">${record.hatch_time || '-'}</span></div>`;
     html += '</div>';
 
     // Cabinet details - ผลลัพธ์ของแต่ละตู้
-    if (record.cabinetRows) {
+    let cabinetRows = record.cabinet_rows;
+    if (typeof cabinetRows === 'string') {
+        cabinetRows = JSON.parse(cabinetRows);
+    }
+
+    if (cabinetRows) {
         html += '<div class="summary-cabinet-grid">';
         for (let cabinet = 1; cabinet <= 12; cabinet++) {
-            if (record.cabinetRows[cabinet]) {
-                const cabinetData = record.cabinetRows[cabinet];
+            if (cabinetRows[cabinet]) {
+                const cabinetData = cabinetRows[cabinet];
                 const avg = cabinetData.rows[0]?.cabinetAvg || '-';
                 const status = cabinetData.rows[0]?.status || '-';
 
@@ -99,28 +93,35 @@ function viewDetail(index) {
 }
 
 // Delete a specific record
-function deleteHistory(index) {
+async function deleteHistory(id) {
     if (!confirm('คุณต้องการลบข้อมูลนี้ใช่ไหม?')) return;
 
-    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-    history.splice(index, 1);
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    try {
+        await firebaseApi.deleteRecord(id);
+        await loadHistory();
 
-    loadHistory();
-
-    // Hide details if visible
-    document.getElementById('historyDetails').style.display = 'none';
+        // Hide details if visible
+        document.getElementById('historyDetails').style.display = 'none';
+    } catch (error) {
+        console.error('Error deleting record:', error);
+        alert('เกิดข้อผิดพลาดในการลบข้อมูล');
+    }
 }
 
 // Clear all history
-function clearHistory() {
+async function clearHistory() {
     if (!confirm('คุณต้องการล้างข้อมูลประวัติทั้งหมดใช่ไหม?')) return;
 
-    localStorage.removeItem(HISTORY_KEY);
-    loadHistory();
+    try {
+        await firebaseApi.deleteAllRecords();
+        await loadHistory();
 
-    // Hide details if visible
-    document.getElementById('historyDetails').style.display = 'none';
+        // Hide details if visible
+        document.getElementById('historyDetails').style.display = 'none';
+    } catch (error) {
+        console.error('Error clearing history:', error);
+        alert('เกิดข้อผิดพลาดในการล้างข้อมูล');
+    }
 }
 
 // Load history on page load
