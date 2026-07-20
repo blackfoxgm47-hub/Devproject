@@ -128,3 +128,67 @@ async function clearHistory() {
 document.addEventListener('DOMContentLoaded', function() {
     loadHistory();
 });
+
+// Export data to JSON
+async function exportToJSON() {
+    try {
+        const history = await firebaseApi.getRecords();
+        
+        if (history.length === 0) {
+            alert('ไม่มีข้อมูลสำหรับ export');
+            return;
+        }
+
+        const dataStr = JSON.stringify(history, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `chicken_hatching_backup_${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Error exporting to JSON:', error);
+        alert('เกิดข้อผิดพลาดในการ export ข้อมูล');
+    }
+}
+
+// Export data to CSV
+async function exportToCSV() {
+    try {
+        const history = await firebaseApi.getRecords();
+        
+        if (history.length === 0) {
+            alert('ไม่มีข้อมูลสำหรับ export');
+            return;
+        }
+
+        // CSV headers
+        let csv = 'ลำดับที่,วันที่,เวลา Start prod,จำนวนตู้,จำนวนตู้ที่ผ่าน,%ตู้ที่ผ่าน,เวลาออกลูกไก่,สรุป\n';
+
+        // CSV rows
+        history.forEach(record => {
+            const date = new Date(record.timestamp).toLocaleString('th-TH');
+            const percentage = record.total_cabinets > 0 
+                ? Math.round((record.passed_cabinets / record.total_cabinets) * 100) 
+                : 0;
+            
+            csv += `${record.sequence_number},"${date}","${record.start_prod_time || ''}",${record.total_cabinets},${record.passed_cabinets},${percentage}%,"${record.hatch_time || ''}","${record.summary || ''}"\n`;
+        });
+
+        const dataBlob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(dataBlob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `chicken_hatching_backup_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Error exporting to CSV:', error);
+        alert('เกิดข้อผิดพลาดในการ export ข้อมูล');
+    }
+}
