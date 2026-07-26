@@ -165,8 +165,8 @@ async function exportToCSV() {
             return;
         }
 
-        // CSV headers
-        let csv = 'ลำดับที่,วันที่,เวลา Start prod,จำนวนตู้,จำนวนตู้ที่ผ่าน,%ตู้ที่ผ่าน,เวลาออกลูกไก่,สรุป\n';
+        // CSV headers - ข้อมูลสรุปจากหน้ารายละเอียด
+        let csv = 'ลำดับที่,วันที่,เวลา Start prod,จำนวนตู้ทั้งหมด,จำนวนตู้ที่ผ่าน,%จำนวนตู้ที่มีคะแนน ≥4 คะแนน,เวลาออกลูกไก่,สรุป\n';
 
         // CSV rows
         history.forEach(record => {
@@ -183,7 +183,7 @@ async function exportToCSV() {
         
         const link = document.createElement('a');
         link.href = url;
-        link.download = `chicken_hatching_backup_${new Date().toISOString().split('T')[0]}.csv`;
+        link.download = `chicken_hatching_summary_${new Date().toISOString().split('T')[0]}.csv`;
         link.click();
         
         URL.revokeObjectURL(url);
