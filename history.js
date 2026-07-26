@@ -129,32 +129,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadHistory();
 });
 
-// Export data to JSON
-async function exportToJSON() {
-    try {
-        const history = await firebaseApi.getRecords();
-        
-        if (history.length === 0) {
-            alert('ไม่มีข้อมูลสำหรับ export');
-            return;
-        }
-
-        const dataStr = JSON.stringify(history, null, 2);
-        const dataBlob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(dataBlob);
-        
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `chicken_hatching_backup_${new Date().toISOString().split('T')[0]}.json`;
-        link.click();
-        
-        URL.revokeObjectURL(url);
-    } catch (error) {
-        console.error('Error exporting to JSON:', error);
-        alert('เกิดข้อผิดพลาดในการ export ข้อมูล');
-    }
-}
-
 // Export data to CSV
 async function exportToCSV() {
     try {
