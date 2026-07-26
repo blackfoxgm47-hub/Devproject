@@ -178,7 +178,9 @@ async function exportToCSV() {
             csv += `${record.sequence_number},"${date}","${record.start_prod_time || ''}",${record.total_cabinets},${record.passed_cabinets},${percentage}%,"${record.hatch_time || ''}","${record.summary || ''}"\n`;
         });
 
-        const dataBlob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        // Add BOM for Excel to recognize UTF-8 encoding
+        const BOM = '\uFEFF';
+        const dataBlob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(dataBlob);
         
         const link = document.createElement('a');
