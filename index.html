@@ -162,6 +162,48 @@
             white-space: nowrap;
         }
 
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stats-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-icon {
+            font-size: 48px;
+        }
+
+        .stats-content {
+            flex: 1;
+        }
+
+        .stats-label {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stats-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
         .info-section {
             background: #f8f9fa;
             padding: 40px;
@@ -219,6 +261,24 @@
             </p>
             <div class="action-buttons">
                 <a href="evaluation.html" class="hero-btn hero-btn-primary">เริ่มประเมิน</a>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <div class="stats-card">
+                <div class="stats-icon">📊</div>
+                <div class="stats-content">
+                    <div class="stats-label">จำนวนการบันทึกทั้งหมด</div>
+                    <div class="stats-value" id="homeTotalRecords">0</div>
+                </div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-icon">🏢</div>
+                <div class="stats-content">
+                    <div class="stats-label">จำนวนตู้ทั้งหมดที่ประเมิน</div>
+                    <div class="stats-value" id="homeTotalCabinets">0</div>
+                </div>
             </div>
         </div>
 
@@ -282,5 +342,38 @@
             </div>
         </div>
     </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="firebase.js"></script>
+    <script>
+        // Load statistics from Firebase
+        async function loadHomeStats() {
+            try {
+                const history = await firebaseApi.getRecords();
+                
+                // Calculate total records
+                const totalRecords = history.length;
+                
+                // Calculate total cabinets
+                let totalCabinets = 0;
+                history.forEach(record => {
+                    totalCabinets += record.total_cabinets || 0;
+                });
+                
+                // Update UI
+                document.getElementById('homeTotalRecords').textContent = totalRecords;
+                document.getElementById('homeTotalCabinets').textContent = totalCabinets;
+            } catch (error) {
+                console.error('Error loading home stats:', error);
+            }
+        }
+
+        // Load stats on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadHomeStats();
+        });
+    </script>
 </body>
 </html>
