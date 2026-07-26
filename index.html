@@ -139,6 +139,29 @@
             text-align: center;
         }
 
+        .features-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+            gap: 20px;
+        }
+
+        .features-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, white, transparent);
+            max-width: 200px;
+        }
+
+        .features-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 0;
+            white-space: nowrap;
+        }
+
         .info-section {
             background: #f8f9fa;
             padding: 40px;
@@ -200,6 +223,12 @@
         </div>
 
         <!-- Features Section -->
+        <div class="features-header">
+            <div class="features-line"></div>
+            <h2 class="features-title">Features</h2>
+            <div class="features-line"></div>
+        </div>
+        
         <div class="features-section">
             <div class="feature-card">
                 <div class="feature-icon">📝</div>
