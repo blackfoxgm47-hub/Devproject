@@ -22,12 +22,10 @@ function updateSummaryCards(history) {
     const totalRecords = history.length;
     let totalCabinets = 0;
     let totalPassed = 0;
-    let totalChicks = 0;
 
     history.forEach(record => {
         totalCabinets += record.total_cabinets || 0;
         totalPassed += record.passed_cabinets || 0;
-        totalChicks += record.total_chicks || 0;
     });
 
     const avgPassRate = totalCabinets > 0 ? Math.round((totalPassed / totalCabinets) * 100) : 0;
@@ -35,13 +33,13 @@ function updateSummaryCards(history) {
     document.getElementById('totalRecords').textContent = totalRecords;
     document.getElementById('avgPassRate').textContent = avgPassRate + '%';
     document.getElementById('totalCabinets').textContent = totalCabinets;
-    document.getElementById('totalChicks').textContent = totalChicks;
+    document.getElementById('totalPassed').textContent = totalPassed;
 
     // Update trends
     updateTrend('totalRecordsTrend', history.length > 1 ? history.length - (history.length - 1) : 0, 0);
     updateTrend('totalCabinetsTrend', totalCabinets, 0);
     updateTrend('avgPassRateTrend', avgPassRate, 0);
-    updateTrend('totalChicksTrend', totalChicks, 0);
+    updateTrend('totalPassedTrend', totalPassed, 0);
 }
 
 // Update trend indicator
