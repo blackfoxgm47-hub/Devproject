@@ -5,18 +5,19 @@
 }
 
 body {
-    font-family: 'Sarabun', 'Prompt', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Prompt', sans-serif;
+    background: #F5F7FA;
     min-height: 100vh;
     padding: 0;
     margin: 0;
     display: flex;
+    color: #1F2937;
 }
 
 /* Sidebar */
 .sidebar {
     width: 250px;
-    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+    background: #1E293B;
     color: white;
     position: fixed;
     height: 100vh;
@@ -143,9 +144,9 @@ body {
 }
 
 .menu-item.active .menu-link {
-    background: rgba(102, 126, 234, 0.3);
+    background: rgba(37, 99, 235, 0.3);
     color: white;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #2563EB;
 }
 
 /* Hamburger Menu Button */
@@ -154,7 +155,7 @@ body {
     top: 16px;
     left: 16px;
     z-index: 1060;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #2563EB;
     border: none;
     border-radius: 8px;
     padding: 12px;
@@ -280,9 +281,9 @@ body {
     max-width: 100%;
     margin: 0 auto;
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    padding: 16px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    padding: 24px;
 }
 
 .title {
@@ -294,23 +295,23 @@ body {
 }
 
 .section {
-    margin-bottom: 16px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
+    margin-bottom: 24px;
+    padding: 24px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .section-title {
-    color: #495057;
+    color: #1F2937;
     font-size: 18px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     font-weight: 600;
 }
 
 /* Criteria Section */
 .criteria-section {
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    background: #EFF6FF;
 }
 
 .criteria-details {
@@ -418,12 +419,12 @@ body {
 }
 
 .data-table th {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #2563EB;
     color: white;
     padding: 12px;
     text-align: center;
     font-weight: 600;
-    border: 1px solid #5a67d8;
+    border: 1px solid #1D4ED8;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -511,39 +512,41 @@ body {
 
 /* Dashboard Styles */
 .dashboard-cards {
-    margin-bottom: 16px;
+    margin-bottom: 24px;
 }
 
 .dashboard-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 12px;
-    padding: 20px;
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
     display: flex;
     align-items: center;
-    gap: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    gap: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     transition: transform 0.3s ease;
     height: 100%;
+    border-left: 4px solid #2563EB;
 }
 
 .dashboard-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
 }
 
 .dashboard-card:nth-child(2) {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border-left-color: #10B981;
 }
 
 .dashboard-card:nth-child(3) {
-    background: linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%);
+    border-left-color: #F59E0B;
 }
 
 .dashboard-card:nth-child(4) {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-left-color: #8B5CF6;
 }
 
 .dashboard-card:nth-child(5) {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-left-color: #2563EB;
 }
 
 .card-icon {
@@ -555,13 +558,13 @@ body {
 }
 
 .card-label {
-    color: white;
+    color: #6B7280;
     font-size: 14px;
     margin-bottom: 5px;
 }
 
 .card-value {
-    color: white;
+    color: #1F2937;
     font-size: 28px;
     font-weight: 700;
 }
@@ -582,17 +585,17 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: white;
+    color: #1F2937;
     font-size: 18px;
     font-weight: 700;
 }
 
 .dashboard-section {
     background: white;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .chart-container {
@@ -779,38 +782,38 @@ body {
 }
 
 .btn-add {
-    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    background: #F59E0B;
     color: white;
 }
 
 .btn-save {
-    background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+    background: #10B981;
     color: white;
 }
 
 .btn-load {
-    background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+    background: #2563EB;
     color: white;
 }
 
 .btn-clear {
-    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    background: #EF4444;
     color: white;
 }
 
 .btn-print {
-    background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+    background: #8B5CF6;
     color: white;
 }
 
 .btn-calc {
-    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    background: #F59E0B;
     color: white;
 }
 
 .btn-delete {
     padding: 12px 20px;
-    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    background: #EF4444;
     color: white;
     border: none;
     border-radius: 12px;
@@ -860,9 +863,9 @@ body {
 }
 
 .score-btn.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #2563EB;
     color: white;
-    border-color: #5a67d8;
+    border-color: #1D4ED8;
 }
 
 @media (max-width: 767px) {
