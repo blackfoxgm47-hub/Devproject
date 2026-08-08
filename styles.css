@@ -398,27 +398,46 @@ body {
 .table-section {
     background: white;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+@media (max-width: 767px) {
+    .table-section {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 }
 
 .data-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
+    white-space: nowrap;
 }
 
 .data-table th {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 12px 8px;
+    padding: 12px;
     text-align: center;
     font-weight: 600;
     border: 1px solid #5a67d8;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    white-space: nowrap;
 }
 
 .data-table td {
-    padding: 8px;
+    padding: 12px;
     border: 1px solid #dee2e6;
     text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
 }
 
 .data-table tbody tr:nth-child(even) {
@@ -433,17 +452,39 @@ body {
 .data-table input[type="text"],
 .data-table select {
     width: 100%;
-    padding: 6px;
+    padding: 8px;
     border: 1px solid #dee2e6;
     border-radius: 4px;
     text-align: center;
     font-size: 13px;
+    min-height: 40px;
+    -webkit-appearance: none;
+}
+
+@media (max-width: 767px) {
+    .data-table input[type="number"],
+    .data-table input[type="text"],
+    .data-table select {
+        padding: 10px;
+        font-size: 16px;
+    }
 }
 
 .data-table input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     cursor: pointer;
+    min-width: 24px;
+    min-height: 24px;
+}
+
+@media (max-width: 767px) {
+    .data-table input[type="checkbox"] {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        min-height: 32px;
+    }
 }
 
 .data-table .readonly {
