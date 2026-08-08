@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ภาพรวมการประเมิน</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -28,39 +30,47 @@
     </div>
 
     <div class="main-content">
-        <div class="container">
+        <div class="container-fluid">
             <h1 class="title">ภาพรวมการประเมิน</h1>
 
             <!-- Summary Cards -->
-            <div class="dashboard-cards">
-                <div class="dashboard-card">
-                    <div class="card-icon">📊</div>
-                    <div class="card-content">
-                        <div class="card-label">จำนวนการบันทึกทั้งหมด</div>
-                        <div class="card-value" id="totalRecords">0</div>
+            <div class="row dashboard-cards">
+                <div class="col-12 col-md-6 col-lg-3 mb-3">
+                    <div class="dashboard-card">
+                        <div class="card-icon">📊</div>
+                        <div class="card-content">
+                            <div class="card-label">จำนวนการบันทึกทั้งหมด</div>
+                            <div class="card-value" id="totalRecords">0</div>
+                        </div>
                     </div>
                 </div>
-                <div class="dashboard-card">
-                    <div class="card-chart">
-                        <canvas id="passRateChart"></canvas>
-                        <div class="chart-value" id="avgPassRate">0%</div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-label">เปอร์เซ็นต์การผ่านเฉลี่ย</div>
-                    </div>
-                </div>
-                <div class="dashboard-card">
-                    <div class="card-icon">🏢</div>
-                    <div class="card-content">
-                        <div class="card-label">จำนวนตู้ทั้งหมดที่ประเมิน</div>
-                        <div class="card-value" id="totalCabinets">0</div>
+                <div class="col-12 col-md-6 col-lg-3 mb-3">
+                    <div class="dashboard-card">
+                        <div class="card-chart">
+                            <canvas id="passRateChart"></canvas>
+                            <div class="chart-value" id="avgPassRate">0%</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-label">เปอร์เซ็นต์การผ่านเฉลี่ย</div>
+                        </div>
                     </div>
                 </div>
-                <div class="dashboard-card">
-                    <div class="card-icon">📈</div>
-                    <div class="card-content">
-                        <div class="card-label">จำนวนตู้ที่ผ่านทั้งหมด</div>
-                        <div class="card-value" id="totalPassed">0</div>
+                <div class="col-12 col-md-6 col-lg-3 mb-3">
+                    <div class="dashboard-card">
+                        <div class="card-icon">🏢</div>
+                        <div class="card-content">
+                            <div class="card-label">จำนวนตู้ทั้งหมดที่ประเมิน</div>
+                            <div class="card-value" id="totalCabinets">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3 mb-3">
+                    <div class="dashboard-card">
+                        <div class="card-icon">📈</div>
+                        <div class="card-content">
+                            <div class="card-label">จำนวนตู้ที่ผ่านทั้งหมด</div>
+                            <div class="card-value" id="totalPassed">0</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -109,5 +119,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="firebase.js"></script>
     <script src="dashboard.js"></script>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

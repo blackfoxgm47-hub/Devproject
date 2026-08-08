@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบประเมินลูกไก่ก่อนออก</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <style>
         .home-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
+            padding: 16px;
         }
 
         .hero-section {
@@ -100,10 +100,7 @@
         }
 
         .features-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 60px;
+            margin-bottom: 16px;
         }
 
         .feature-card {
@@ -112,6 +109,7 @@
             border-radius: 15px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
+            height: 100%;
         }
 
         .feature-card:hover {
@@ -163,10 +161,7 @@
         }
 
         .stats-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            margin-bottom: 16px;
         }
 
         .stats-card {
@@ -178,6 +173,7 @@
             align-items: center;
             gap: 20px;
             transition: transform 0.3s ease;
+            height: 100%;
         }
 
         .stats-card:hover {
@@ -296,7 +292,7 @@
     </style>
 </head>
 <body>
-    <div class="home-container">
+    <div class="container-fluid home-container">
         <!-- Hero Section -->
         <div class="hero-section">
             <h2 class="hero-welcome">Welcome</h2>
@@ -313,19 +309,23 @@
         </div>
 
         <!-- Stats Section -->
-        <div class="stats-section">
-            <div class="stats-card">
-                <div class="stats-icon">📊</div>
-                <div class="stats-content">
-                    <div class="stats-label">จำนวนการบันทึกทั้งหมด</div>
-                    <div class="stats-value" id="homeTotalRecords">0</div>
+        <div class="row stats-section">
+            <div class="col-12 col-md-6 col-lg-6 mb-3">
+                <div class="stats-card">
+                    <div class="stats-icon">📊</div>
+                    <div class="stats-content">
+                        <div class="stats-label">จำนวนการบันทึกทั้งหมด</div>
+                        <div class="stats-value" id="homeTotalRecords">0</div>
+                    </div>
                 </div>
             </div>
-            <div class="stats-card">
-                <div class="stats-icon">🏢</div>
-                <div class="stats-content">
-                    <div class="stats-label">จำนวนตู้ทั้งหมดที่ประเมิน</div>
-                    <div class="stats-value" id="homeTotalCabinets">0</div>
+            <div class="col-12 col-md-6 col-lg-6 mb-3">
+                <div class="stats-card">
+                    <div class="stats-icon">🏢</div>
+                    <div class="stats-content">
+                        <div class="stats-label">จำนวนตู้ทั้งหมดที่ประเมิน</div>
+                        <div class="stats-value" id="homeTotalCabinets">0</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -358,41 +358,49 @@
             <div class="features-line"></div>
         </div>
         
-        <div class="features-section">
-            <div class="feature-card">
-                <div class="feature-icon">📝</div>
-                <h3 class="feature-title">บันทึกข้อมูลง่าย</h3>
-                <p class="feature-description">
-                    บันทึกข้อมูลการประเมินลูกไก่แต่ละตู้ได้อย่างง่ายดาย
-                    พร้อมคำนวณค่าเฉลี่ยและสถานะอัตโนมัติ
-                </p>
+        <div class="row features-section">
+            <div class="col-12 col-md-6 col-lg-3 mb-3">
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3 class="feature-title">บันทึกข้อมูลง่าย</h3>
+                    <p class="feature-description">
+                        บันทึกข้อมูลการประเมินลูกไก่แต่ละตู้ได้อย่างง่ายดาย
+                        พร้อมคำนวณค่าเฉลี่ยและสถานะอัตโนมัติ
+                    </p>
+                </div>
             </div>
 
-            <div class="feature-card">
-                <div class="feature-icon">📊</div>
-                <h3 class="feature-title">วิเคราะห์ข้อมูล</h3>
-                <p class="feature-description">
-                    ดูภาพรวมการประเมินและสถิติต่างๆ
-                    เพื่อติดตามแนวโน้มและปรับปรุงกระบวนการ
-                </p>
+            <div class="col-12 col-md-6 col-lg-3 mb-3">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">วิเคราะห์ข้อมูล</h3>
+                    <p class="feature-description">
+                        ดูภาพรวมการประเมินและสถิติต่างๆ
+                        เพื่อติดตามแนวโน้มและปรับปรุงกระบวนการ
+                    </p>
+                </div>
             </div>
 
-            <div class="feature-card">
-                <div class="feature-icon">📋</div>
-                <h3 class="feature-title">ประวัติการบันทึก</h3>
-                <p class="feature-description">
-                    เก็บประวัติการประเมินทั้งหมดไว้ตรวจสอบ
-                    สามารถ export ข้อมูลเป็น Excel เพื่อวิเคราะห์เพิ่มเติม
-                </p>
+            <div class="col-12 col-md-6 col-lg-3 mb-3">
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3 class="feature-title">ประวัติการบันทึก</h3>
+                    <p class="feature-description">
+                        เก็บประวัติการประเมินทั้งหมดไว้ตรวจสอบ
+                        สามารถ export ข้อมูลเป็น Excel เพื่อวิเคราะห์เพิ่มเติม
+                    </p>
+                </div>
             </div>
 
-            <div class="feature-card">
-                <div class="feature-icon">☁️</div>
-                <h3 class="feature-title">บันทึกออนไลน์</h3>
-                <p class="feature-description">
-                    ข้อมูลถูกเก็บใน Cloud Database
-                    ทำให้สามารถเข้าถึงข้อมูลจากทุกที่ทุกเวลา
-                </p>
+            <div class="col-12 col-md-6 col-lg-3 mb-3">
+                <div class="feature-card">
+                    <div class="feature-icon">☁️</div>
+                    <h3 class="feature-title">บันทึกออนไลน์</h3>
+                    <p class="feature-description">
+                        ข้อมูลถูกเก็บใน Cloud Database
+                        ทำให้สามารถเข้าถึงข้อมูลจากทุกที่ทุกเวลา
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -416,6 +424,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="firebase.js"></script>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Load statistics from Firebase
         async function loadHomeStats() {
