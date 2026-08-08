@@ -7,11 +7,11 @@ async function loadDashboard() {
     // Update summary cards
     updateSummaryCards(history);
 
-    // Update pass trend chart
+    // Update pass trend line chart
     updatePassTrendChart(history);
 
-    // Update cabinet statistics
-    updateCabinetStatistics(history);
+    // Update cabinet bar chart
+    updateCabinetBarChart(history);
 
     // Update recent records
     updateRecentRecords(history);
@@ -22,10 +22,12 @@ function updateSummaryCards(history) {
     const totalRecords = history.length;
     let totalCabinets = 0;
     let totalPassed = 0;
+    let totalChicks = 0;
 
     history.forEach(record => {
         totalCabinets += record.total_cabinets || 0;
         totalPassed += record.passed_cabinets || 0;
+        totalChicks += record.total_chicks || 0;
     });
 
     const avgPassRate = totalCabinets > 0 ? Math.round((totalPassed / totalCabinets) * 100) : 0;
@@ -33,48 +35,49 @@ function updateSummaryCards(history) {
     document.getElementById('totalRecords').textContent = totalRecords;
     document.getElementById('avgPassRate').textContent = avgPassRate + '%';
     document.getElementById('totalCabinets').textContent = totalCabinets;
-    document.getElementById('totalPassed').textContent = totalPassed;
+    document.getElementById('totalChicks').textContent = totalChicks;
 
-    // Draw pass rate pie chart
-    drawPassRateChart(avgPassRate);
+    // Update trends
+    updateTrend('totalRecordsTrend', history.length > 1 ? history.length - (history.length - 1) : 0, 0);
+    updateTrend('totalCabinetsTrend', totalCabinets, 0);
+    updateTrend('avgPassRateTrend', avgPassRate, 0);
+    updateTrend('totalChicksTrend', totalChicks, 0);
 }
 
-// Draw pass rate pie chart
-function drawPassRateChart(passRate) {
-    const canvas = document.getElementById('passRateChart');
-    if (!canvas) return;
+// Update trend indicator
+function updateTrend(elementId, current, previous) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
 
-    const ctx = canvas.getContext('2d');
-    const container = canvas.parentElement;
-    canvas.width = container.clientWidth;
-    canvas.height = container.clientHeight;
+    const icon = element.querySelector('.trend-icon');
+    const value = element.querySelector('.trend-value');
 
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const radius = Math.min(centerX, centerY) - 5;
+    if (!previous || previous === 0) {
+        icon.textContent = '-';
+        value.textContent = '-';
+        element.className = 'card-trend trend-neutral';
+        return;
+    }
 
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const diff = current - previous;
+    const percent = Math.round((diff / previous) * 100);
 
-    // Draw background circle
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-    ctx.fill();
-
-    // Draw pass rate arc
-    const startAngle = -Math.PI / 2;
-    const endAngle = startAngle + (passRate / 100) * 2 * Math.PI;
-
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-    ctx.lineWidth = 10;
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineCap = 'round';
-    ctx.stroke();
+    if (diff > 0) {
+        icon.textContent = '↑';
+        value.textContent = `+${percent}%`;
+        element.className = 'card-trend trend-up';
+    } else if (diff < 0) {
+        icon.textContent = '↓';
+        value.textContent = `${percent}%`;
+        element.className = 'card-trend trend-down';
+    } else {
+        icon.textContent = '-';
+        value.textContent = '0%';
+        element.className = 'card-trend trend-neutral';
+    }
 }
 
-// Update pass trend chart
+// Update pass trend line chart
 function updatePassTrendChart(history) {
     const canvas = document.getElementById('passTrendChart');
     if (!canvas) return;
@@ -89,7 +92,7 @@ function updatePassTrendChart(history) {
 
     if (history.length === 0) {
         ctx.fillStyle = '#6c757d';
-        ctx.font = '16px Arial';
+        ctx.font = '16px Prompt, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('ไม่มีข้อมูล', canvas.width / 2, canvas.height / 2);
         return;
@@ -99,8 +102,8 @@ function updatePassTrendChart(history) {
     const recentHistory = history.slice(0, 10).reverse();
     const labels = recentHistory.map((record, index) => index + 1);
     const data = recentHistory.map(record => {
-        const total = record.totalCabinets || 0;
-        const passed = record.passedCabinets || 0;
+        const total = record.total_cabinets || 0;
+        const passed = record.passed_cabinets || 0;
         return total > 0 ? Math.round((passed / total) * 100) : 0;
     });
 
@@ -108,7 +111,6 @@ function updatePassTrendChart(history) {
     const padding = 50;
     const chartWidth = canvas.width - padding * 2;
     const chartHeight = canvas.height - padding * 2;
-    const barWidth = chartWidth / data.length - 10;
 
     // Draw axes
     ctx.strokeStyle = '#dee2e6';
@@ -119,36 +121,105 @@ function updatePassTrendChart(history) {
     ctx.lineTo(canvas.width - padding, canvas.height - padding);
     ctx.stroke();
 
-    // Draw bars
-    data.forEach((value, index) => {
-        const x = padding + 10 + index * (barWidth + 10);
-        const barHeight = (value / 100) * chartHeight;
-        const y = canvas.height - padding - barHeight;
+    // Draw grid lines
+    ctx.strokeStyle = '#f0f0f0';
+    for (let i = 0; i <= 100; i += 20) {
+        const y = canvas.height - padding - (i / 100) * chartHeight;
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(canvas.width - padding, y);
+        ctx.stroke();
+    }
 
-        // Color based on pass rate
-        ctx.fillStyle = value >= 80 ? '#4caf50' : (value >= 60 ? '#ff9800' : '#f44336');
-        ctx.fillRect(x, y, barWidth, barHeight);
+    // Draw line chart
+    if (data.length > 1) {
+        const stepX = chartWidth / (data.length - 1);
+        
+        // Draw line
+        ctx.beginPath();
+        ctx.strokeStyle = '#2563EB';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
 
-        // Draw value
-        ctx.fillStyle = '#333';
-        ctx.font = '12px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(value + '%', x + barWidth / 2, y - 5);
+        data.forEach((value, index) => {
+            const x = padding + index * stepX;
+            const y = canvas.height - padding - (value / 100) * chartHeight;
+            if (index === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        });
+        ctx.stroke();
 
-        // Draw label
-        ctx.fillText(labels[index], x + barWidth / 2, canvas.height - padding + 20);
-    });
+        // Draw gradient area under line
+        ctx.beginPath();
+        const gradient = ctx.createLinearGradient(0, padding, 0, canvas.height - padding);
+        gradient.addColorStop(0, 'rgba(37, 99, 235, 0.3)');
+        gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
+        ctx.fillStyle = gradient;
+
+        data.forEach((value, index) => {
+            const x = padding + index * stepX;
+            const y = canvas.height - padding - (value / 100) * chartHeight;
+            if (index === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        });
+        ctx.lineTo(padding + (data.length - 1) * stepX, canvas.height - padding);
+        ctx.lineTo(padding, canvas.height - padding);
+        ctx.closePath();
+        ctx.fill();
+
+        // Draw points
+        data.forEach((value, index) => {
+            const x = padding + index * stepX;
+            const y = canvas.height - padding - (value / 100) * chartHeight;
+            
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = '#2563EB';
+            ctx.fill();
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        });
+    }
 
     // Draw Y-axis labels
+    ctx.fillStyle = '#6c757d';
+    ctx.font = '12px Prompt, sans-serif';
     ctx.textAlign = 'right';
     for (let i = 0; i <= 100; i += 20) {
         const y = canvas.height - padding - (i / 100) * chartHeight;
         ctx.fillText(i + '%', padding - 10, y + 4);
     }
+
+    // Draw X-axis labels
+    ctx.textAlign = 'center';
+    data.forEach((value, index) => {
+        const stepX = data.length > 1 ? chartWidth / (data.length - 1) : chartWidth / 2;
+        const x = padding + index * stepX;
+        ctx.fillText(labels[index], x, canvas.height - padding + 20);
+    });
 }
 
-// Update cabinet statistics
-function updateCabinetStatistics(history) {
+// Update cabinet bar chart
+function updateCabinetBarChart(history) {
+    const canvas = document.getElementById('cabinetBarChart');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const container = canvas.parentElement;
+    canvas.width = container.clientWidth;
+    canvas.height = 300;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     const cabinetStats = {};
     let cabinetCount = 0;
 
@@ -168,42 +239,82 @@ function updateCabinetStatistics(history) {
         }
     });
 
-    const container = document.getElementById('cabinetStats');
     if (Object.keys(cabinetStats).length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #6c757d;">ไม่มีข้อมูล</p>';
+        ctx.fillStyle = '#6c757d';
+        ctx.font = '16px Prompt, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('ไม่มีข้อมูล', canvas.width / 2, canvas.height / 2);
         return;
     }
 
-    let html = '<div class="cabinet-stats-grid">';
+    // Prepare data
+    const labels = [];
+    const data = [];
     for (let i = 1; i <= cabinetCount; i++) {
         if (cabinetStats[i]) {
             const stats = cabinetStats[i];
+            labels.push(`ตู้ ${i}`);
             const passRate = stats.total > 0 ? Math.round((stats.passed / stats.total) * 100) : 0;
-            const statusClass = passRate >= 80 ? 'status-pass' : (passRate >= 60 ? 'status-warning' : 'status-fail');
-
-            html += `
-                <div class="cabinet-stat-item">
-                    <div class="cabinet-stat-header">ตู้ที่ ${i}</div>
-                    <div class="cabinet-stat-details">
-                        <div class="stat-detail">
-                            <span class="stat-label">ประเมิน:</span>
-                            <span class="stat-value">${stats.total} ครั้ง</span>
-                        </div>
-                        <div class="stat-detail">
-                            <span class="stat-label">ผ่าน:</span>
-                            <span class="stat-value">${stats.passed} ครั้ง</span>
-                        </div>
-                        <div class="stat-detail">
-                            <span class="stat-label">เปอร์เซ็นต์:</span>
-                            <span class="stat-value ${statusClass}">${passRate}%</span>
-                        </div>
-                    </div>
-                </div>
-            `;
+            data.push(passRate);
         }
     }
-    html += '</div>';
-    container.innerHTML = html;
+
+    // Draw chart
+    const padding = 50;
+    const chartWidth = canvas.width - padding * 2;
+    const chartHeight = canvas.height - padding * 2;
+    const barWidth = Math.min(60, chartWidth / data.length - 20);
+
+    // Draw axes
+    ctx.strokeStyle = '#dee2e6';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padding, padding);
+    ctx.lineTo(padding, canvas.height - padding);
+    ctx.lineTo(canvas.width - padding, canvas.height - padding);
+    ctx.stroke();
+
+    // Draw grid lines
+    ctx.strokeStyle = '#f0f0f0';
+    for (let i = 0; i <= 100; i += 20) {
+        const y = canvas.height - padding - (i / 100) * chartHeight;
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(canvas.width - padding, y);
+        ctx.stroke();
+    }
+
+    // Draw bars
+    const stepX = chartWidth / data.length;
+    data.forEach((value, index) => {
+        const x = padding + stepX * index + (stepX - barWidth) / 2;
+        const barHeight = (value / 100) * chartHeight;
+        const y = canvas.height - padding - barHeight;
+
+        // Color based on pass rate
+        ctx.fillStyle = value >= 80 ? '#10B981' : (value >= 60 ? '#F59E0B' : '#EF4444');
+        ctx.fillRect(x, y, barWidth, barHeight);
+
+        // Draw value
+        ctx.fillStyle = '#1F2937';
+        ctx.font = 'bold 12px Prompt, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(value + '%', x + barWidth / 2, y - 5);
+
+        // Draw label
+        ctx.fillStyle = '#6c757d';
+        ctx.font = '11px Prompt, sans-serif';
+        ctx.fillText(labels[index], x + barWidth / 2, canvas.height - padding + 15);
+    });
+
+    // Draw Y-axis labels
+    ctx.fillStyle = '#6c757d';
+    ctx.font = '12px Prompt, sans-serif';
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 100; i += 20) {
+        const y = canvas.height - padding - (i / 100) * chartHeight;
+        ctx.fillText(i + '%', padding - 10, y + 4);
+    }
 }
 
 // Update recent records
@@ -243,8 +354,9 @@ document.addEventListener('DOMContentLoaded', function() {
     loadDashboard();
 });
 
-// Handle window resize for chart
+// Handle window resize for charts
 window.addEventListener('resize', async function() {
     const history = await firebaseApi.getRecords();
     updatePassTrendChart(history);
+    updateCabinetBarChart(history);
 });

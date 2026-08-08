@@ -515,6 +515,10 @@ body {
     margin-bottom: 24px;
 }
 
+.dashboard-charts-grid {
+    margin-bottom: 24px;
+}
+
 .dashboard-card {
     background: white;
     border-radius: 16px;
@@ -567,6 +571,34 @@ body {
     color: #1F2937;
     font-size: 28px;
     font-weight: 700;
+}
+
+.card-trend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    font-size: 13px;
+}
+
+.trend-icon {
+    font-size: 16px;
+}
+
+.trend-value {
+    font-weight: 600;
+}
+
+.trend-up {
+    color: #10B981;
+}
+
+.trend-down {
+    color: #EF4444;
+}
+
+.trend-neutral {
+    color: #6B7280;
 }
 
 .card-chart {
