@@ -486,169 +486,192 @@ function restoreOriginalTable() {
     }
 }
 
-// Generate cabinet cards (new card-based layout)
+// Generate table rows
 function generateTable() {
-    const cabinetCardsContainer = document.getElementById('cabinetCardsContainer');
-    if (!cabinetCardsContainer) return;
+    const tableBody = document.getElementById('tableBody');
+    if (!tableBody) return;
     
-    cabinetCardsContainer.innerHTML = '';
+    tableBody.innerHTML = '';
 
     for (let cabinet = 1; cabinet <= NUM_CABINETS; cabinet++) {
         const rows = cabinetRows[cabinet].rows;
         const rowCount = rows.length;
-        
-        // Calculate cabinet status
-        const avgValue = cabinetRows[cabinet].rows[0].cabinetAvg;
-        const status = avgValue !== '-' && parseFloat(avgValue) >= 4.00 ? 'pass' : (avgValue !== '-' ? 'fail' : 'pending');
-        const statusText = status === 'pass' ? 'ผ่าน' : (status === 'fail' ? 'ไม่ผ่าน' : 'รอประเมิน');
 
-        const cabinetCard = document.createElement('div');
-        cabinetCard.className = 'cabinet-card';
-        cabinetCard.id = `cabinet-card-${cabinet}`;
-        
-        cabinetCard.innerHTML = `
-            <div class="cabinet-card-header">
-                <div class="cabinet-title">ตู้ที่ ${cabinet}</div>
-                <div class="cabinet-status ${status}">${statusText}</div>
-            </div>
-            <div class="cabinet-info">
-                <div class="form-group">
-                    <label class="form-label">ตู้เกิด</label>
-                    <input type="text" class="input-field hatcher-input" data-cabinet="${cabinet}" id="hatcher-${cabinet}" placeholder="กรอกข้อมูลตู้เกิด" value="${cabinetRows[cabinet].hatcher}">
-                </div>
-            </div>
-            <div class="cabinet-rows">
-                ${rows.map((rowData, rowIndex) => `
-                    <div class="cabinet-row" data-cabinet="${cabinet}" data-rowindex="${rowIndex}">
-                        <div class="row-header">
-                            <span class="row-label">คันที่ ${rowIndex + 1}</span>
-                        </div>
-                        <div class="row-criteria">
-                            <div class="criteria-section">
-                                <label class="criteria-label">ความแห้งของขน</label>
-                                <div class="radio-group">
-                                    <div class="radio-button tooltip">
-                                        <input type="radio" name="dryness-${cabinet}-${rowIndex}" value="1" ${rowData.dryness === '1' ? 'checked' : ''} onchange="setScore(${cabinet}, ${rowIndex}, 'dryness', 1)">
-                                        <span class="radio-label">1</span>
-                                        <span class="tooltip-text">ขนยังไม่แห้ง หัวเปียก คอเปียก</span>
-                                    </div>
-                                    <div class="radio-button tooltip">
-                                        <input type="radio" name="dryness-${cabinet}-${rowIndex}" value="2" ${rowData.dryness === '2' ? 'checked' : ''} onchange="setScore(${cabinet}, ${rowIndex}, 'dryness', 2)">
-                                        <span class="radio-label">2</span>
-                                        <span class="tooltip-text">ขนหมาด โดยเฉพาะขนหลังคอ</span>
-                                    </div>
-                                    <div class="radio-button tooltip">
-                                        <input type="radio" name="dryness-${cabinet}-${rowIndex}" value="3" ${rowData.dryness === '3' ? 'checked' : ''} onchange="setScore(${cabinet}, ${rowIndex}, 'dryness', 3)">
-                                        <span class="radio-label">3</span>
-                                        <span class="tooltip-text">ขนแห้งฟูทั้งตัว พร้อมออก</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="criteria-section">
-                                <label class="criteria-label">เยื่อเปลือกไข่</label>
-                                <div class="radio-group">
-                                    <div class="radio-button tooltip">
-                                        <input type="radio" name="membrane-${cabinet}-${rowIndex}" value="1" ${rowData.membrane === '1' ? 'checked' : ''} onchange="setScore(${cabinet}, ${rowIndex}, 'membrane', 1)">
-                                        <span class="radio-label">1</span>
-                                        <span class="tooltip-text">บีบแล้วเยื่อไข่ไม่ขาด</span>
-                                    </div>
-                                    <div class="radio-button tooltip">
-                                        <input type="radio" name="membrane-${cabinet}-${rowIndex}" value="2" ${rowData.membrane === '2' ? 'checked' : ''} onchange="setScore(${cabinet}, ${rowIndex}, 'membrane', 2)">
-                                        <span class="radio-label">2</span>
-                                        <span class="tooltip-text">บีบแล้วเยื่อไข่ขาด</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="criteria-section">
-                                <label class="criteria-label">ความสะอาดของเปลือก</label>
-                                <div class="radio-group">
-                                    <div class="radio-button tooltip">
-                                        <input type="radio" name="cleanliness-${cabinet}-${rowIndex}" value="1" ${rowData.cleanliness === '1' ? 'checked' : ''} onchange="setScore(${cabinet}, ${rowIndex}, 'cleanliness', 1)">
-                                        <span class="radio-label">1</span>
-                                        <span class="tooltip-text">เปลือกสะอาด เปื้อนเล็กน้อย</span>
-                                    </div>
-                                    <div class="radio-button tooltip">
-                                        <input type="radio" name="cleanliness-${cabinet}-${rowIndex}" value="2" ${rowData.cleanliness === '2' ? 'checked' : ''} onchange="setScore(${cabinet}, ${rowIndex}, 'cleanliness', 2)">
-                                        <span class="radio-label">2</span>
-                                        <span class="tooltip-text">มีคราบขี้ไก่ติดอยู่มาก</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row-summary">
-                            <span class="summary-label">คะแนนรวม:</span>
-                            <span class="summary-value" id="total-score-${cabinet}-${rowIndex}">${rowData.totalScore}</span>
-                        </div>
+        for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+            const row = rowIndex + 1;
+            const rowData = rows[rowIndex];
+            const tr = document.createElement('tr');
+
+            // Merge hatcher cell for first row only
+            const hatcherCell = row === 1
+                ? `<td rowspan="${rowCount}" class="hatcher-cell"><input type="text" class="input-field hatcher-input" data-cabinet="${cabinet}" id="hatcher-${cabinet}" placeholder="กรอกข้อมูลตู้เกิด" value="${cabinetRows[cabinet].hatcher}"></td>`
+                : '';
+
+            // Merge cabinet cell for first row only
+            const cabinetCell = row === 1
+                ? `<td rowspan="${rowCount}">${cabinet}</td>`
+                : '';
+
+            // Merge dryness average cell for first row only
+            const drynessAvgCell = row === 1
+                ? `<td rowspan="${rowCount}" class="readonly" id="dryness-avg-cabinet-${cabinet}">${rowData.drynessAvg}</td>`
+                : '';
+
+            // Merge membrane average cell for first row only
+            const membraneAvgCell = row === 1
+                ? `<td rowspan="${rowCount}" class="readonly" id="membrane-avg-cabinet-${cabinet}">${rowData.membraneAvg}</td>`
+                : '';
+
+            // Merge cleanliness average cell for first row only
+            const cleanlinessAvgCell = row === 1
+                ? `<td rowspan="${rowCount}" class="readonly" id="cleanliness-avg-cabinet-${cabinet}">${rowData.cleanlinessAvg}</td>`
+                : '';
+
+            // Merge average cell for first row only
+            const avgCell = row === 1
+                ? `<td rowspan="${rowCount}" class="readonly" id="avg-cabinet-${cabinet}">${rowData.cabinetAvg}</td>`
+                : '';
+
+            // Merge status cell for first row only
+            const statusCell = row === 1
+                ? `<td rowspan="${rowCount}" class="readonly" id="status-cabinet-${cabinet}"><span class="${getStatusClass(rowData.status)}">${rowData.status}</span></td>`
+                : '';
+
+            tr.innerHTML = `
+                ${hatcherCell}
+                ${cabinetCell}
+                <td>${row}</td>
+                <td>
+                    <div class="score-buttons" data-cabinet="${cabinet}" data-rowindex="${rowIndex}" data-type="dryness">
+                        <button type="button" class="score-btn" onclick="setScore(${cabinet}, ${rowIndex}, 'dryness', 1)">1</button>
+                        <button type="button" class="score-btn" onclick="setScore(${cabinet}, ${rowIndex}, 'dryness', 2)">2</button>
+                        <button type="button" class="score-btn" onclick="setScore(${cabinet}, ${rowIndex}, 'dryness', 3)">3</button>
+                        <input type="hidden" class="score-input" data-cabinet="${cabinet}" data-rowindex="${rowIndex}" data-type="dryness" value="">
                     </div>
-                `).join('')}
-            </div>
-            <div class="cabinet-footer">
-                <div class="cabinet-stats">
-                    <div class="stat-item">
-                        <span class="stat-label">ค่าเฉลี่ยความแห้ง:</span>
-                        <span class="stat-value" id="dryness-avg-cabinet-${cabinet}">${rowData.drynessAvg}</span>
+                </td>
+                ${drynessAvgCell}
+                <td>
+                    <div class="score-buttons" data-cabinet="${cabinet}" data-rowindex="${rowIndex}" data-type="membrane">
+                        <button type="button" class="score-btn" onclick="setScore(${cabinet}, ${rowIndex}, 'membrane', 1)">1</button>
+                        <button type="button" class="score-btn" onclick="setScore(${cabinet}, ${rowIndex}, 'membrane', 2)">2</button>
+                        <input type="hidden" class="score-input" data-cabinet="${cabinet}" data-rowindex="${rowIndex}" data-type="membrane" value="">
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">ค่าเฉลี่ยเยื่อ:</span>
-                        <span class="stat-value" id="membrane-avg-cabinet-${cabinet}">${rowData.membraneAvg}</span>
+                </td>
+                ${membraneAvgCell}
+                <td>
+                    <div class="score-buttons" data-cabinet="${cabinet}" data-rowindex="${rowIndex}" data-type="cleanliness">
+                        <button type="button" class="score-btn" onclick="setScore(${cabinet}, ${rowIndex}, 'cleanliness', 1)">1</button>
+                        <button type="button" class="score-btn" onclick="setScore(${cabinet}, ${rowIndex}, 'cleanliness', 2)">2</button>
+                        <input type="hidden" class="score-input" data-cabinet="${cabinet}" data-rowindex="${rowIndex}" data-type="cleanliness" value="">
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">ค่าเฉลี่ยสะอาด:</span>
-                        <span class="stat-value" id="cleanliness-avg-cabinet-${cabinet}">${rowData.cleanlinessAvg}</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">ค่าเฉลี่ยรวม:</span>
-                        <span class="stat-value" id="avg-cabinet-${cabinet}">${avgValue}</span>
-                    </div>
-                </div>
-                <button onclick="deleteCabinetRow(${cabinet})" class="btn btn-clear btn-sm">ลบตู้นี้</button>
-            </div>
-        `;
-        
-        cabinetCardsContainer.appendChild(cabinetCard);
-        
-        // Add event listener to hatcher input
-        const hatcherInput = cabinetCard.querySelector('input.hatcher-input');
-        if (hatcherInput) {
-            hatcherInput.addEventListener('change', function() {
-                cabinetRows[cabinet].hatcher = this.value;
-                saveData();
-            });
+                </td>
+                ${cleanlinessAvgCell}
+                <td class="readonly" id="total-score-${cabinet}-${rowIndex}">${rowData.totalScore}</td>
+                ${avgCell}
+                ${statusCell}
+                <td><button onclick="deleteRow(${cabinet}, ${rowIndex})" class="btn-delete">ลบ</button></td>
+            `;
+            tableBody.appendChild(tr);
+
+            // Add event listener to hatcher input
+            if (row === 1) {
+                const hatcherInput = tr.querySelector('input.hatcher-input');
+                if (hatcherInput) {
+                    hatcherInput.addEventListener('change', function() {
+                        cabinetRows[cabinet].hatcher = this.value;
+                        saveData();
+                    });
+                }
+            }
+
+            // Load saved data for this row from cabinetRows
+            if (rowData) {
+                // Set dryness value and button state
+                if (rowData.dryness !== '') {
+                    const drynessInput = tr.querySelector(`input[data-type="dryness"]`);
+                    if (drynessInput) drynessInput.value = rowData.dryness;
+                    const drynessButtons = tr.querySelectorAll(`.score-buttons[data-type="dryness"] .score-btn`);
+                    drynessButtons.forEach(btn => {
+                        if (parseInt(btn.textContent) === parseInt(rowData.dryness)) {
+                            btn.classList.add('active');
+                        }
+                    });
+                }
+
+                // Set membrane value and button state
+                if (rowData.membrane !== '') {
+                    const membraneInput = tr.querySelector(`input[data-type="membrane"]`);
+                    if (membraneInput) membraneInput.value = rowData.membrane;
+                    const membraneButtons = tr.querySelectorAll(`.score-buttons[data-type="membrane"] .score-btn`);
+                    membraneButtons.forEach(btn => {
+                        if (parseInt(btn.textContent) === parseInt(rowData.membrane)) {
+                            btn.classList.add('active');
+                        }
+                    });
+                }
+
+                // Set cleanliness value and button state
+                if (rowData.cleanliness !== '') {
+                    const cleanlinessInput = tr.querySelector(`input[data-type="cleanliness"]`);
+                    if (cleanlinessInput) cleanlinessInput.value = rowData.cleanliness;
+                    const cleanlinessButtons = tr.querySelectorAll(`.score-buttons[data-type="cleanliness"] .score-btn`);
+                    cleanlinessButtons.forEach(btn => {
+                        if (parseInt(btn.textContent) === parseInt(rowData.cleanliness)) {
+                            btn.classList.add('active');
+                        }
+                    });
+                }
+            }
         }
     }
 
-    // Update summary details after generating cards
+    // Update summary details after generating table
     updateSummaryDetails();
 }
 
-// Set score from radio button (new card-based layout)
+// Set score from clickable button
 function setScore(cabinet, rowIndex, type, score) {
-    // Update data in cabinetRows
-    const rowData = cabinetRows[cabinet].rows[rowIndex];
-    if (type === 'dryness') {
-        rowData.dryness = score.toString();
-    } else if (type === 'membrane') {
-        rowData.membrane = score.toString();
-    } else if (type === 'cleanliness') {
-        rowData.cleanliness = score.toString();
+    const hiddenInput = document.querySelector(`input[data-cabinet="${cabinet}"][data-rowindex="${rowIndex}"][data-type="${type}"]`);
+    const buttons = document.querySelectorAll(`.score-buttons[data-cabinet="${cabinet}"][data-rowindex="${rowIndex}"][data-type="${type}"] .score-btn`);
+
+    if (hiddenInput) {
+        hiddenInput.value = score;
+
+        // Update data in cabinetRows
+        const rowData = cabinetRows[cabinet].rows[rowIndex];
+        if (type === 'dryness') {
+            rowData.dryness = score;
+        } else if (type === 'membrane') {
+            rowData.membrane = score;
+        } else if (type === 'cleanliness') {
+            rowData.cleanliness = score;
+        }
+
+        // Update button styles
+        buttons.forEach(btn => {
+            btn.classList.remove('active');
+            if (parseInt(btn.textContent) === score) {
+                btn.classList.add('active');
+            }
+        });
+
+        // Calculate cabinet average for the type
+        if (type === 'dryness') {
+            calculateDrynessCabinetAverage(cabinet);
+        } else if (type === 'membrane') {
+            calculateMembraneCabinetAverage(cabinet);
+        } else if (type === 'cleanliness') {
+            calculateCleanlinessCabinetAverage(cabinet);
+        }
+
+        calculateTotalScore(cabinet, rowIndex);
+
+        // Auto-save data
+        saveData();
+        
+        // Show toast notification
+        showToast('success', 'บันทึกคะแนนแล้ว');
     }
-
-    // Calculate cabinet average for the type
-    if (type === 'dryness') {
-        calculateDrynessCabinetAverage(cabinet);
-    } else if (type === 'membrane') {
-        calculateMembraneCabinetAverage(cabinet);
-    } else if (type === 'cleanliness') {
-        calculateCleanlinessCabinetAverage(cabinet);
-    }
-
-    calculateTotalScore(cabinet, rowIndex);
-
-    // Auto-save data
-    saveData();
-    
-    // Show toast notification
-    showToast('success', 'บันทึกคะแนนแล้ว');
 }
 
 // Calculate dryness cabinet average
@@ -754,26 +777,21 @@ function calculateCabinetAverage(cabinet) {
 
     const avg = calculateAverage(totalScores);
     const avgValue = avg !== null ? avg.toFixed(2) : '-';
-    const status = avg !== null && avg >= 4.00 ? 'pass' : (avg !== null ? 'fail' : 'pending');
+    const status = avg !== null && avg >= 4.00 ? 'ผ่าน' : (avg !== null ? 'ไม่ผ่าน' : '-');
 
     // Update all rows' cabinetAvg and status
     rows.forEach(rowData => {
         rowData.cabinetAvg = avgValue;
-        rowData.status = status === 'pass' ? 'ผ่าน' : (status === 'fail' ? 'ไม่ผ่าน' : '-');
+        rowData.status = status;
     });
 
-    // Update DOM - cabinet average
+    // Update DOM
     const avgElement = document.getElementById(`avg-cabinet-${cabinet}`);
     if (avgElement) avgElement.textContent = avgValue;
-
-    // Update cabinet status in card header
-    const cabinetCard = document.getElementById(`cabinet-card-${cabinet}`);
-    if (cabinetCard) {
-        const statusElement = cabinetCard.querySelector('.cabinet-status');
-        if (statusElement) {
-            statusElement.className = `cabinet-status ${status}`;
-            statusElement.textContent = status === 'pass' ? 'ผ่าน' : (status === 'fail' ? 'ไม่ผ่าน' : 'รอประเมิน');
-        }
+    
+    const statusElement = document.getElementById(`status-cabinet-${cabinet}`);
+    if (statusElement) {
+        statusElement.innerHTML = `<span class="${getStatusClass(status)}">${status}</span>`;
     }
 
     // Update summary details
@@ -787,31 +805,29 @@ function getStatusClass(status) {
     return '';
 }
 
-// Delete a specific cabinet row (card-based layout)
-function deleteCabinetRow(cabinet) {
-    if (!confirm(`คุณต้องการลบตู้ที่ ${cabinet} หรือไม่?`)) {
+// Delete a specific row
+function deleteRow(cabinet, rowIndex) {
+    const displayRow = rowIndex + 1;
+    if (!confirm(`คุณต้องการลบ ตู้ที่ ${cabinet} คันที่ ${displayRow} หรือไม่?`)) {
         return;
     }
 
-    // Remove cabinet from data structure
-    delete cabinetRows[cabinet];
-
-    // Reindex cabinets to maintain sequential numbering
-    const newCabinetRows = {};
-    let newIndex = 1;
-    for (let i = 1; i <= NUM_CABINETS; i++) {
-        if (cabinetRows[i]) {
-            newCabinetRows[newIndex] = cabinetRows[i];
-            newIndex++;
-        }
-    }
-    cabinetRows = newCabinetRows;
-    NUM_CABINETS = newIndex - 1;
-
+    // Remove row from data structure
+    cabinetRows[cabinet].rows.splice(rowIndex, 1);
+    
+    // Regenerate table to reorder rows
     generateTable();
+    
+    // Recalculate averages
+    calculateDrynessCabinetAverage(cabinet);
+    calculateMembraneCabinetAverage(cabinet);
+    calculateCleanlinessCabinetAverage(cabinet);
+    calculateCabinetAverage(cabinet);
+    
+    // Save updated data to localStorage
     saveData();
-
-    showToast('success', `ลบตู้ที่ ${cabinet} เรียบร้อย! (ทั้งหมด ${NUM_CABINETS} ตู้)`);
+    
+    showToast('success', `ลบคันที่ ${displayRow} ของตู้ที่ ${cabinet} เรียบร้อย!`);
 }
 
 // Calculate average of an array
