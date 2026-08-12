@@ -50,93 +50,145 @@
         <div class="container-fluid">
             <h1 class="title">แบบประเมินลูกไก่ก่อนออก</h1>
         
-        <!-- Evaluation Criteria -->
-        <div class="section criteria-section">
-            <h2 class="section-title">เกณฑ์ในการประเมิน</h2>
-            <div class="criteria-details">
-                <div class="criteria-item">
-                    <h3 class="criteria-name">ความแห้งของขน</h3>
-                    <div class="score-list">
-                        <p><strong>Score 1:</strong> ขนยังไม่แห้ง หัวเปียก คอเปียก ไม่สามารถออกได้ใน 4 ชั่วโมง</p>
-                        <p><strong>Score 2:</strong> ขนหมาด โดยเฉพาะขนหลังคอ อีก 4-6 ชั่วโมงออกได้</p>
-                        <p><strong>Score 3:</strong> ขนแห้งฟูทั้งตัว พร้อมออก</p>
+        <!-- Progress Steps -->
+        <div class="progress-steps">
+            <div class="step-item active" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-label">เวลา Start</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step-item" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-label">ประเมิน</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step-item" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-label">สรุปผล</div>
+            </div>
+        </div>
+
+        <!-- Step 1: Start Production Time -->
+        <div class="section evaluation-card" id="step1">
+            <div class="card-header">
+                <h2 class="section-title">Step 1: เวลา Start prod</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">เลือกเวลาเริ่มการผลิต</label>
+                    <select id="startProdTime" class="input-field">
+                        <option value="">เลือกเวลา</option>
+                        <option value="10:00 น.">10:00 น.</option>
+                        <option value="12:00 น.">12:00 น.</option>
+                        <option value="14:00 น.">14:00 น.</option>
+                        <option value="15:00 น.">15:00 น.</option>
+                    </select>
+                </div>
+                <button onclick="saveStartProdTime()" class="btn btn-save">บันทึกและไปต่อ</button>
+                <span id="startProdStatus" class="status-message"></span>
+            </div>
+        </div>
+
+        <!-- Step 2: Evaluation -->
+        <div class="section evaluation-card" id="step2">
+            <div class="card-header">
+                <h2 class="section-title">Step 2: ประเมินลูกไก่</h2>
+            </div>
+            <div class="card-body">
+                <!-- Evaluation Criteria Info -->
+                <div class="criteria-info-card">
+                    <h3 class="info-title">เกณฑ์ในการประเมิน</h3>
+                    <div class="criteria-grid">
+                        <div class="criteria-card">
+                            <h4 class="criteria-name">ความแห้งของขน</h4>
+                            <div class="score-guide">
+                                <div class="score-item">
+                                    <span class="score-badge">1</span>
+                                    <span class="score-desc">ขนยังไม่แห้ง หัวเปียก คอเปียก</span>
+                                </div>
+                                <div class="score-item">
+                                    <span class="score-badge">2</span>
+                                    <span class="score-desc">ขนหมาด โดยเฉพาะขนหลังคอ</span>
+                                </div>
+                                <div class="score-item">
+                                    <span class="score-badge">3</span>
+                                    <span class="score-desc">ขนแห้งฟูทั้งตัว พร้อมออก</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="criteria-card">
+                            <h4 class="criteria-name">เยื่อเปลือกไข่</h4>
+                            <div class="score-guide">
+                                <div class="score-item">
+                                    <span class="score-badge">1</span>
+                                    <span class="score-desc">บีบแล้วเยื่อไข่ไม่ขาด</span>
+                                </div>
+                                <div class="score-item">
+                                    <span class="score-badge">2</span>
+                                    <span class="score-desc">บีบแล้วเยื่อไข่ขาด</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="criteria-card">
+                            <h4 class="criteria-name">ความสะอาดของเปลือก</h4>
+                            <div class="score-guide">
+                                <div class="score-item">
+                                    <span class="score-badge">1</span>
+                                    <span class="score-desc">เปลือกสะอาด เปื้อนเล็กน้อย</span>
+                                </div>
+                                <div class="score-item">
+                                    <span class="score-badge">2</span>
+                                    <span class="score-desc">มีคราบขี้ไก่ติดอยู่มาก</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="criteria-item">
-                    <h3 class="criteria-name">เยื่อเปลือกไข่</h3>
-                    <div class="score-list">
-                        <p><strong>Score 1:</strong> บีบแล้วเยื่อไข่ไม่ขาด</p>
-                        <p><strong>Score 2:</strong> บีบแล้วเยื่อไข่ขาด</p>
+
+                <!-- Cabinet Management -->
+                <div class="cabinet-management">
+                    <div class="action-buttons">
+                        <button onclick="addCabinet()" class="btn btn-add">เพิ่มตู้เกิด</button>
+                        <button onclick="deleteCabinet()" class="btn btn-clear">ลบตู้เกิด</button>
+                        <button onclick="addRowToCabinet()" class="btn btn-add">เพิ่มคัน</button>
                     </div>
                 </div>
-                <div class="criteria-item">
-                    <h3 class="criteria-name">ความสะอาดของเปลือก</h3>
-                    <div class="score-list">
-                        <p><strong>Score 1:</strong> เปลือกสะอาด เปื้อนเล็กน้อย ไม่มีคราบขี้ไก่</p>
-                        <p><strong>Score 2:</strong> มีคราบขี้ไก่ติดอยู่มาก</p>
-                    </div>
+
+                <!-- Cabinet Cards Container -->
+                <div id="cabinetCardsContainer" class="cabinet-cards-container">
+                    <!-- Cabinet cards will be generated by JavaScript -->
                 </div>
             </div>
         </div>
 
-        <!-- Start Production Time -->
-        <div class="section criteria-section">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <h2 class="section-title" style="margin: 0;">เวลา Start prod</h2>
-                <select id="startProdTime" class="input-field" style="width: 150px;">
-                    <option value="">เลือกเวลา</option>
-                    <option value="10:00 น.">10:00 น.</option>
-                    <option value="12:00 น.">12:00 น.</option>
-                    <option value="14:00 น.">14:00 น.</option>
-                    <option value="15:00 น.">15:00 น.</option>
-                </select>
-                <button onclick="saveStartProdTime()" class="btn btn-save">บันทึก</button>
-                <span id="startProdStatus" style="color: #4caf50; font-weight: 600; font-size: 14px;"></span>
+        <!-- Step 3: Summary -->
+        <div class="section evaluation-card" id="step3">
+            <div class="card-header">
+                <h2 class="section-title">Step 3: สรุปผลการประเมิน</h2>
+            </div>
+            <div class="card-body">
+                <div id="summaryDetails" class="summary-details">
+                    <!-- Summary will be generated by JavaScript -->
+                </div>
+                <div class="final-actions">
+                    <button onclick="saveDataWithAlert()" class="btn btn-save btn-large">บันทึกข้อมูล</button>
+                    <button onclick="clearData()" class="btn btn-clear btn-large">ล้างข้อมูล</button>
+                </div>
             </div>
         </div>
 
-        <!-- Main Table -->
-        <div class="section table-section">
-            <table class="data-table" id="mainTable">
-                <thead>
-                    <tr>
-                        <th>ตู้เกิด</th>
-                        <th>ตู้ที่</th>
-                        <th>คันที่</th>
-                        <th>ความแห้งของขน</th>
-                        <th>ค่าเฉลี่ย</th>
-                        <th>เยื่อเปลือกไข่</th>
-                        <th>ค่าเฉลี่ย</th>
-                        <th>ความสะอาดของเปลือก</th>
-                        <th>ค่าเฉลี่ย</th>
-                        <th>คะแนนรวม</th>
-                        <th>รวมค่าเฉลี่ย</th>
-                        <th>สถานะ</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <!-- Rows will be generated by JavaScript -->
-                </tbody>
-            </table>
-            <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                <button onclick="addCabinet()" class="btn btn-add">เพิ่มตู้เกิด</button>
-                <button onclick="deleteCabinet()" class="btn btn-clear">ลบตู้เกิด</button>
-                <button onclick="addRowToCabinet()" class="btn btn-add">เพิ่มคัน</button>
+        <!-- Toast Notification -->
+        <div id="toast" class="toast">
+            <div class="toast-content">
+                <span class="toast-icon"></span>
+                <span class="toast-message"></span>
             </div>
         </div>
 
-        <!-- Calculation Section -->
-        <div class="section calculation-section">
-            <h3 class="section-title">ผลรายละเอียดการบันทึก</h3>
-            <div id="summaryDetails" class="summary-details">
-                <!-- Summary will be generated by JavaScript -->
-            </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="section button-section">
-            <button onclick="saveDataWithAlert()" class="btn btn-save">บันทึกข้อมูล</button>
-            <button onclick="clearData()" class="btn btn-clear">ล้างข้อมูล</button>
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">กำลังบันทึกข้อมูล...</div>
         </div>
     </div>
     </div>
