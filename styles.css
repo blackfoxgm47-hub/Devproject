@@ -1207,6 +1207,165 @@ body {
     }
 }
 
+/* Progress Ring */
+.progress-ring-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+}
+
+.progress-ring-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.progress-value {
+    display: block;
+    font-size: 32px;
+    font-weight: 700;
+    color: #2563EB;
+}
+
+.progress-label {
+    display: block;
+    font-size: 14px;
+    color: #6B7280;
+    margin-top: 4px;
+}
+
+/* Performance List */
+.dashboard-performance {
+    margin-top: 24px;
+}
+
+.performance-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.performance-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: #F9FAFB;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.performance-item:hover {
+    background: #F3F4F6;
+    transform: translateX(4px);
+}
+
+.performance-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.performance-rank {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+}
+
+.performance-rank.rank-1 {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+}
+
+.performance-rank.rank-2 {
+    background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 100%);
+}
+
+.performance-rank.rank-3 {
+    background: linear-gradient(135deg, #CD7F32 0%, #B87333 100%);
+}
+
+.performance-rank.rank-other {
+    background: #E5E7EB;
+    color: #6B7280;
+}
+
+.performance-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1F2937;
+}
+
+.performance-score {
+    text-align: right;
+}
+
+.performance-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2563EB;
+}
+
+.performance-label {
+    font-size: 12px;
+    color: #6B7280;
+}
+
+/* Responsive for Dashboard */
+@media (max-width: 991px) {
+    .dashboard-cards .col-lg-3 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+
+    .dashboard-charts-grid .col-lg-8,
+    .dashboard-charts-grid .col-lg-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 767px) {
+    .dashboard-cards .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .dashboard-performance .col-lg-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .progress-ring-container {
+        width: 160px;
+        height: 160px;
+    }
+
+    .progress-value {
+        font-size: 24px;
+    }
+
+    .performance-item {
+        padding: 12px;
+    }
+
+    .performance-name {
+        font-size: 13px;
+    }
+
+    .performance-value {
+        font-size: 16px;
+    }
+}
+
 /* Large Radio Buttons */
 .radio-group {
     display: flex;
