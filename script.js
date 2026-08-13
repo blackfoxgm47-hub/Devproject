@@ -87,52 +87,23 @@ function updateStep(stepNumber) {
     }
 }
 
-// Toast Notification
+// Toast Notification - Use UX library
 function showToast(type, message) {
-    const toast = document.getElementById('toast');
-    const toastIcon = toast.querySelector('.toast-icon');
-    const toastMessage = toast.querySelector('.toast-message');
-    
-    // Remove all type classes
-    toast.classList.remove('success', 'error', 'warning');
-    toast.classList.add(type);
-    
-    // Set icon based on type
-    switch(type) {
-        case 'success':
-            toastIcon.textContent = '✓';
-            break;
-        case 'error':
-            toastIcon.textContent = '✕';
-            break;
-        case 'warning':
-            toastIcon.textContent = '⚠';
-            break;
+    if (window.ux && window.ux.showToast) {
+        window.ux.showToast(message, type);
     }
-    
-    toastMessage.textContent = message;
-    
-    // Show toast
-    toast.classList.add('show');
-    
-    // Hide after 3 seconds
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
 }
 
-// Loading Overlay
-function showLoading() {
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    if (loadingOverlay) {
-        loadingOverlay.classList.add('show');
+// Loading Overlay - Use UX library
+function showLoading(text) {
+    if (window.ux && window.ux.showLoading) {
+        window.ux.showLoading(text);
     }
 }
 
 function hideLoading() {
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    if (loadingOverlay) {
-        loadingOverlay.classList.remove('show');
+    if (window.ux && window.ux.hideLoading) {
+        window.ux.hideLoading();
     }
 }
 

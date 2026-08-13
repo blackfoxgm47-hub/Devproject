@@ -29,17 +29,25 @@ function setupSearchInput() {
 
 // Load history from Firebase
 async function loadHistory() {
-    showLoading();
+    if (window.ux && window.ux.showLoading) {
+        window.ux.showLoading();
+    }
     try {
         const history = await firebaseApi.getRecords();
         allHistoryData = history;
         filteredData = [...allHistoryData];
         renderTable();
-        hideLoading();
+        if (window.ux && window.ux.hideLoading) {
+            window.ux.hideLoading();
+        }
     } catch (error) {
         console.error('Error loading history:', error);
-        hideLoading();
-        showToast('error', 'เกิดข้อผิดพลาดในการโหลดข้อมูล');
+        if (window.ux && window.ux.hideLoading) {
+            window.ux.hideLoading();
+        }
+        if (window.ux && window.ux.showToast) {
+            window.ux.showToast('เกิดข้อผิดพลาดในการโหลดข้อมูล', 'error');
+        }
     }
 }
 
