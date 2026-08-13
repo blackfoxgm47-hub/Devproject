@@ -31,13 +31,10 @@ function updateSummaryCards(history) {
     const totalRecords = history.length;
     let totalCabinets = 0;
     let totalPassed = 0;
-    let totalChicks = 0;
 
     history.forEach(record => {
         totalCabinets += record.total_cabinets || 0;
         totalPassed += record.passed_cabinets || 0;
-        // Estimate chicks: assume 100 chicks per cabinet (adjust as needed)
-        totalChicks += (record.total_cabinets || 0) * 100;
     });
 
     const avgPassRate = totalCabinets > 0 ? Math.round((totalPassed / totalCabinets) * 100) : 0;
@@ -45,7 +42,7 @@ function updateSummaryCards(history) {
     document.getElementById('totalRecords').textContent = totalRecords;
     document.getElementById('avgPassRate').textContent = avgPassRate + '%';
     document.getElementById('totalCabinets').textContent = totalCabinets;
-    document.getElementById('totalChicks').textContent = totalChicks.toLocaleString();
+    document.getElementById('passedCabinets').textContent = totalPassed;
 
     // Update trends (comparing with previous period if available)
     const previousPeriod = history.slice(10); // Compare with older records
@@ -61,12 +58,12 @@ function updateSummaryCards(history) {
         updateTrend('totalRecordsTrend', totalRecords, previousPeriod.length);
         updateTrend('totalCabinetsTrend', totalCabinets, prevCabinets);
         updateTrend('avgPassRateTrend', avgPassRate, prevPassRate);
-        updateTrend('totalChicksTrend', totalChicks, prevCabinets * 100);
+        updateTrend('passedCabinetsTrend', totalPassed, prevPassed);
     } else {
         updateTrend('totalRecordsTrend', totalRecords, 0);
         updateTrend('totalCabinetsTrend', totalCabinets, 0);
         updateTrend('avgPassRateTrend', avgPassRate, 0);
-        updateTrend('totalChicksTrend', totalChicks, 0);
+        updateTrend('passedCabinetsTrend', totalPassed, 0);
     }
 }
 
