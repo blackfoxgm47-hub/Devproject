@@ -947,10 +947,26 @@ async function saveToHistory() {
     };
 
     try {
-        await firebaseApi.createRecord(record);
+        console.log('Attempting to save record to Firebase:', record);
+        console.log('Firebase API available:', typeof firebaseApi !== 'undefined');
+        console.log('createRecord function available:', typeof firebaseApi.createRecord !== 'undefined');
+        
+        const result = await firebaseApi.createRecord(record);
+        console.log('Save result:', result);
     } catch (error) {
         console.error('Error saving to history:', error);
-        throw error;
+        console.error('Error details:', {
+            message: error.message,
+            code: error.code,
+            name: error.name
+        });
+        
+        // Fallback: Save to localStorage only if Firebase fails
+        console.log('Fallback: Saving to localStorage only');
+        localStorage.setItem('lastEvaluationRecord', JSON.stringify(record));
+        
+        // Don't throw error, just log it
+        console.warn('Record saved to localStorage due to Firebase error');
     }
 }
 
