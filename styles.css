@@ -43,6 +43,7 @@ body {
         width: 70px;
     }
     
+    
     .sidebar.collapsed .sidebar-header h2 {
         display: none;
     }
@@ -2724,4 +2725,55 @@ body {
         bottom: 140px;
         right: 20px;
     }
+}
+
+/* QR Code Container */
+.qr-code-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background: var(--bg-card);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow);
+    margin: 20px auto;
+    max-width: 300px;
+}
+
+.qr-code-container canvas,
+.qr-code-container img {
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    background: white;
+}
+
+.qr-code-label {
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    text-align: center;
+    font-weight: 500;
+}
+
+.qr-code-download-btn {
+    margin-top: 12px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.qr-code-download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.qr-code-download-btn:active {
+    transform: translateY(0);
 }

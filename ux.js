@@ -570,6 +570,74 @@ function showNotification(title, options = {}) {
     }
 }
 
+// QR Code Generation
+function generateQRCode(text, options = {}) {
+    const defaultOptions = {
+        width: 200,
+        height: 200,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+    };
+
+    const qrOptions = { ...defaultOptions, ...options };
+
+    try {
+        const qrCode = new QRCode(document.createElement('div'), qrOptions);
+        qrCode.makeCode(text);
+        return qrCode;
+    } catch (error) {
+        console.error('QR Code generation error:', error);
+        if (window.ux && window.ux.showToast) {
+            window.ux.showToast('สร้าง QR Code ไม่สำเร็จ', 'error');
+        }
+        return null;
+    }
+}
+
+function generateQRCodeForURL(url) {
+    const qrContainer = document.createElement('div');
+    qrContainer.className = 'qr-code-container';
+    
+    const qrCode = generateQRCode(url, {
+        width: 200,
+        height: 200
+    });
+
+    if (qrCode) {
+        qrContainer.appendChild(qrCode._el);
+        
+        const label = document.createElement('p');
+        label.className = 'qr-code-label';
+        label.textContent = 'สแกนเพื่อเข้าใช้งาน';
+        qrContainer.appendChild(label);
+    }
+
+    return qrContainer;
+}
+
+function downloadQRCode(qrElement, filename = 'qrcode.png') {
+    const canvas = qrElement.querySelector('canvas');
+    if (!canvas) {
+        if (window.ux && window.ux.showToast) {
+            window.ux.showToast('ไม่พบ QR Code', 'error');
+        }
+        return;
+    }
+
+    const url = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    if (window.ux && window.ux.showToast) {
+        window.ux.showToast('ดาวน์โหลด QR Code สำเร็จ', 'success');
+    }
+}
+
 // Export functions for use in other files
 window.ux = {
     showLoading,
@@ -585,5 +653,8 @@ window.ux = {
     backupData,
     restoreData,
     requestNotificationPermission,
-    showNotification
+    showNotification,
+    generateQRCode,
+    generateQRCodeForURL,
+    downloadQRCode
 };
