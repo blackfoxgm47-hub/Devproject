@@ -966,12 +966,16 @@ function validateData() {
 
     // Check start production time
     const startProdTimeInput = document.getElementById('startProdTime');
-    if (!startProdTime || startProdTime === '') {
+    const selectedTime = startProdTimeInput ? startProdTimeInput.value : '';
+    if (!selectedTime || selectedTime === '') {
         if (startProdTimeInput) {
             startProdTimeInput.classList.add('error');
         }
         isValid = false;
         errorMessage = 'กรุณาเลือกเวลา Start prod';
+    } else {
+        // Update the global variable if valid
+        startProdTime = selectedTime;
     }
 
     // Check hatcher inputs
