@@ -761,6 +761,217 @@ function getActivityLogsSummary() {
     return summary;
 }
 
+// Cloud Sync Management
+const CLOUD_SYNC_KEY = 'cloud_sync_status';
+const SYNC_QUEUE_KEY = 'sync_queue';
+
+function getCloudSyncStatus() {
+    const status = localStorage.getItem(CLOUD_SYNC_KEY);
+    if (!status) {
+        return {
+            enabled: false,
+            lastSync: null,
+            syncInterval: 300000, // 5 minutes
+            autoSync: true
+        };
+    }
+    
+    try {
+        return JSON.parse(status);
+    } catch (error) {
+        console.error('Error parsing cloud sync status:', error);
+        return {
+            enabled: false,
+            lastSync: null,
+            syncInterval: 300000,
+            autoSync: true
+        };
+    }
+}
+
+function setCloudSyncStatus(status) {
+    localStorage.setItem(CLOUD_SYNC_KEY, JSON.stringify(status));
+}
+
+function enableCloudSync() {
+    const status = getCloudSyncStatus();
+    status.enabled = true;
+    setCloudSyncStatus(status);
+    
+    if (window.ux && window.ux.showToast) {
+        window.ux.showToast('เปิด Cloud Sync แล้ว', 'success');
+    }
+    
+    // Start auto sync
+    if (status.autoSync) {
+        startAutoSync();
+    }
+}
+
+function disableCloudSync() {
+    const status = getCloudSyncStatus();
+    status.enabled = false;
+    setCloudSyncStatus(status);
+    
+    // Stop auto sync
+    stopAutoSync();
+    
+    if (window.ux && window.ux.showToast) {
+        window.ux.showToast('ปิด Cloud Sync แล้ว', 'info');
+    }
+}
+
+let syncIntervalId = null;
+
+function startAutoSync() {
+    stopAutoSync(); // Clear any existing interval
+    
+    const status = getCloudSyncStatus();
+    if (!status.enabled || !status.autoSync) return;
+    
+    syncIntervalId = setInterval(async () => {
+        await syncToCloud();
+    }, status.syncInterval);
+}
+
+function stopAutoSync() {
+    if (syncIntervalId) {
+        clearInterval(syncIntervalId);
+        syncIntervalId = null;
+    }
+}
+
+async function syncToCloud() {
+    const status = getCloudSyncStatus();
+    if (!status.enabled || !window.firebaseApi) {
+        return false;
+    }
+
+    try {
+        // Get local data
+        const localRecords = await firebaseApi.getRecords();
+        
+        // Sync to Firebase
+        const syncResult = await firebaseApi.syncData(localRecords);
+        
+        // Update last sync time
+        status.lastSync = new Date().toISOString();
+        setCloudSyncStatus(status);
+        
+        // Process sync queue
+        await processSyncQueue();
+        
+        if (window.ux && window.ux.showNotification) {
+            window.ux.showNotification('ซิงค์ข้อมูลสำเร็จ', {
+                body: `ซิงค์เมื่อ ${new Date().toLocaleTimeString('th-TH')}`
+            });
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Cloud sync error:', error);
+        
+        // Add to sync queue for retry
+        addToSyncQueue({
+            action: 'sync',
+            timestamp: new Date().toISOString(),
+            error: error.message
+        });
+        
+        return false;
+    }
+}
+
+async function manualSync() {
+    if (window.ux && window.ux.showLoading) {
+        window.ux.showLoading('กำลังซิงค์ข้อมูล...');
+    }
+
+    const success = await syncToCloud();
+
+    if (window.ux && window.ux.hideLoading) {
+        window.ux.hideLoading();
+    }
+
+    if (success) {
+        if (window.ux && window.ux.showToast) {
+            window.ux.showToast('ซิงค์ข้อมูลสำเร็จ', 'success');
+        }
+    } else {
+        if (window.ux && window.ux.showToast) {
+            window.ux.showToast('ซิงค์ข้อมูลไม่สำเร็จ', 'error');
+        }
+    }
+
+    return success;
+}
+
+function addToSyncQueue(item) {
+    const queue = getSyncQueue();
+    queue.push(item);
+    localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(queue));
+}
+
+function getSyncQueue() {
+    const queue = localStorage.getItem(SYNC_QUEUE_KEY);
+    if (!queue) return [];
+    
+    try {
+        return JSON.parse(queue);
+    } catch (error) {
+        console.error('Error parsing sync queue:', error);
+        return [];
+    }
+}
+
+async function processSyncQueue() {
+    const queue = getSyncQueue();
+    if (queue.length === 0) return;
+
+    const processed = [];
+    const failed = [];
+
+    for (const item of queue) {
+        try {
+            // Retry the failed operation
+            if (item.action === 'sync') {
+                await syncToCloud();
+                processed.push(item);
+            }
+        } catch (error) {
+            failed.push(item);
+        }
+    }
+
+    // Update queue with only failed items
+    localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(failed));
+
+    if (processed.length > 0) {
+        console.log(`Processed ${processed.length} items from sync queue`);
+    }
+}
+
+function clearSyncQueue() {
+    localStorage.removeItem(SYNC_QUEUE_KEY);
+    
+    if (window.ux && window.ux.showToast) {
+        window.ux.showToast('ลบคิวซิงค์แล้ว', 'success');
+    }
+}
+
+function getSyncStatus() {
+    const status = getCloudSyncStatus();
+    const queue = getSyncQueue();
+    
+    return {
+        enabled: status.enabled,
+        autoSync: status.autoSync,
+        lastSync: status.lastSync,
+        syncInterval: status.syncInterval,
+        pendingQueue: queue.length
+    };
+}
+
 // Export functions for use in other files
 window.ux = {
     showLoading,
@@ -784,5 +995,10 @@ window.ux = {
     getActivityLogs,
     clearActivityLogs,
     exportActivityLogs,
-    getActivityLogsSummary
+    getActivityLogsSummary,
+    enableCloudSync,
+    disableCloudSync,
+    manualSync,
+    getSyncStatus,
+    clearSyncQueue
 };
