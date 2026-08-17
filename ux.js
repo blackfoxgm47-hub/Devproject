@@ -972,6 +972,194 @@ function getSyncStatus() {
     };
 }
 
+// Role Permission Management
+const ROLES_KEY = 'user_roles';
+const PERMISSIONS_KEY = 'user_permissions';
+
+const DEFAULT_ROLES = {
+    admin: {
+        name: 'ผู้ดูแลระบบ',
+        permissions: ['all'],
+        description: 'เข้าถึงได้ทุกฟังก์ชัน'
+    },
+    manager: {
+        name: 'ผู้จัดการ',
+        permissions: ['view', 'edit', 'delete', 'export', 'backup', 'restore'],
+        description: 'จัดการข้อมูลและรายงาน'
+    },
+    user: {
+        name: 'ผู้ใช้งาน',
+        permissions: ['view', 'edit'],
+        description: 'ดูและแก้ไขข้อมูลพื้นฐาน'
+    },
+    viewer: {
+        name: 'ผู้ดู',
+        permissions: ['view'],
+        description: 'ดูข้อมูลเท่านั้น'
+    }
+};
+
+function getRoles() {
+    const roles = localStorage.getItem(ROLES_KEY);
+    if (!roles) {
+        return DEFAULT_ROLES;
+    }
+    
+    try {
+        return JSON.parse(roles);
+    } catch (error) {
+        console.error('Error parsing roles:', error);
+        return DEFAULT_ROLES;
+    }
+}
+
+function setRoles(roles) {
+    localStorage.setItem(ROLES_KEY, JSON.stringify(roles));
+}
+
+function getCurrentUserRole() {
+    const role = localStorage.getItem('current_role');
+    return role || 'viewer';
+}
+
+function setCurrentRole(role) {
+    const roles = getRoles();
+    
+    if (!roles[role]) {
+        if (window.ux && window.ux.showToast) {
+            window.ux.showToast('บทบาทไม่ถูกต้อง', 'error');
+        }
+        return false;
+    }
+    
+    localStorage.setItem('current_role', role);
+    
+    if (window.ux && window.ux.showToast) {
+        window.ux.showToast(`เปลี่ยนบทบาทเป็น ${roles[role].name} แล้ว`, 'success');
+    }
+    
+    return true;
+}
+
+function hasPermission(permission) {
+    const role = getCurrentUserRole();
+    const roles = getRoles();
+    const roleData = roles[role];
+    
+    if (!roleData) return false;
+    
+    // Admin has all permissions
+    if (roleData.permissions.includes('all')) return true;
+    
+    return roleData.permissions.includes(permission);
+}
+
+function checkPermission(permission) {
+    if (!hasPermission(permission)) {
+        if (window.ux && window.ux.showToast) {
+            window.ux.showToast('คุณไม่มีสิทธิ์เข้าถึงฟังก์ชันนี้', 'error');
+        }
+        return false;
+    }
+    return true;
+}
+
+function addRole(roleId, roleData) {
+    const roles = getRoles();
+    
+    if (roles[roleId]) {
+        if (window.ux && window.ux.showToast) {
+            window.ux.showToast('บทบาทนี้มีอยู่แล้ว', 'error');
+        }
+        return false;
+    }
+    
+    roles[roleId] = roleData;
+    setRoles(roles);
+    
+    if (window.ux && window.ux.showToast) {
+        window.ux.showToast('เพิ่มบทบาทสำเร็จ', 'success');
+    }
+    
+    return true;
+}
+
+function updateRole(roleId, roleData) {
+    const roles = getRoles();
+    
+    if (!roles[roleId]) {
+        if (window.ux && window.ux.showToast) {
+            window.ux.showToast('ไม่พบบทบาทนี้', 'error');
+        }
+        return false;
+    }
+    
+    roles[roleId] = { ...roles[roleId], ...roleData };
+    setRoles(roles);
+    
+    if (window.ux && window.ux.showToast) {
+        window.ux.showToast('อัปเดตบทบาทสำเร็จ', 'success');
+    }
+    
+    return true;
+}
+
+function deleteRole(roleId) {
+    // Cannot delete default roles
+    if (DEFAULT_ROLES[roleId]) {
+        if (window.ux && window.ux.showToast) {
+            window.ux.showToast('ไม่สามารถลบบทบาทเริ่มต้นได้', 'error');
+        }
+        return false;
+    }
+    
+    const roles = getRoles();
+    
+    if (!roles[roleId]) {
+        if (window.ux && window.ux.showToast) {
+            window.ux.showToast('ไม่พบบทบาทนี้', 'error');
+        }
+        return false;
+    }
+    
+    delete roles[roleId];
+    setRoles(roles);
+    
+    // Reset users with this role to viewer
+    const currentRole = getCurrentUserRole();
+    if (currentRole === roleId) {
+        setCurrentRole('viewer');
+    }
+    
+    if (window.ux && window.ux.showToast) {
+        window.ux.showToast('ลบบทบาทสำเร็จ', 'success');
+    }
+    
+    return true;
+}
+
+function getRolePermissions(roleId) {
+    const roles = getRoles();
+    const roleData = roles[roleId];
+    
+    if (!roleData) return [];
+    
+    if (roleData.permissions.includes('all')) {
+        return ['all'];
+    }
+    
+    return roleData.permissions;
+}
+
+function resetRoles() {
+    setRoles(DEFAULT_ROLES);
+    setCurrentRole('viewer');
+    
+    if (window.ux && window.ux.showToast) {
+        window.ux.showToast('รีเซ็ตบทบาทเรียบร้อย', 'success');
+    }
+}
+
 // Export functions for use in other files
 window.ux = {
     showLoading,
@@ -1000,5 +1188,15 @@ window.ux = {
     disableCloudSync,
     manualSync,
     getSyncStatus,
-    clearSyncQueue
+    clearSyncQueue,
+    getRoles,
+    getCurrentUserRole,
+    setCurrentRole,
+    hasPermission,
+    checkPermission,
+    addRole,
+    updateRole,
+    deleteRole,
+    getRolePermissions,
+    resetRoles
 };
