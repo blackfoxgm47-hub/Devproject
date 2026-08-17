@@ -572,6 +572,15 @@ function showNotification(title, options = {}) {
 
 // QR Code Generation
 function generateQRCode(text, options = {}) {
+    // Check if QRCode library is loaded
+    if (typeof QRCode === 'undefined') {
+        console.error('QRCode library is not loaded');
+        if (window.ux && window.ux.showToast) {
+            window.ux.showToast('QRCode library ไม่ได้ถูกโหลด', 'error');
+        }
+        return null;
+    }
+
     const defaultOptions = {
         width: 200,
         height: 200,

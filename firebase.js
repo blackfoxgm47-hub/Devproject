@@ -118,5 +118,47 @@ const firebaseApi = {
             console.error('Error deleting all records:', error);
             throw error;
         }
+    },
+
+    // Add record (alias for createRecord)
+    async addRecord(record) {
+        return this.createRecord(record);
+    },
+
+    // Sync data to Firebase
+    async syncData(records) {
+        try {
+            const batch = db.batch();
+            const collectionRef = db.collection('hatching_records');
+            
+            for (const record of records) {
+                if (record.id) {
+                    // Update existing record
+                    const docRef = collectionRef.doc(record.id);
+                    batch.set(docRef, record, { merge: true });
+                } else {
+                    // Create new record
+                    const docRef = collectionRef.doc();
+                    batch.set(docRef, record);
+                }
+            }
+            
+            await batch.commit();
+            return { success: true, synced: records.length };
+        } catch (error) {
+            console.error('Error syncing data:', error);
+            throw error;
+        }
+    },
+
+    // Add activity log
+    async addActivityLog(logEntry) {
+        try {
+            await db.collection('activity_logs').add(logEntry);
+            return { success: true };
+        } catch (error) {
+            console.error('Error adding activity log:', error);
+            throw error;
+        }
     }
 };
