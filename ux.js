@@ -638,6 +638,129 @@ function downloadQRCode(qrElement, filename = 'qrcode.png') {
     }
 }
 
+// Activity Log Management
+const ACTIVITY_LOG_KEY = 'activity_log';
+const MAX_LOG_ENTRIES = 100;
+
+function logActivity(action, details = {}) {
+    const logEntry = {
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        action: action,
+        details: details,
+        userAgent: navigator.userAgent
+    };
+
+    // Get existing logs
+    const logs = getActivityLogs();
+
+    // Add new log
+    logs.unshift(logEntry);
+
+    // Keep only last MAX_LOG_ENTRIES
+    if (logs.length > MAX_LOG_ENTRIES) {
+        logs.splice(MAX_LOG_ENTRIES);
+    }
+
+    // Save to localStorage
+    localStorage.setItem(ACTIVITY_LOG_KEY, JSON.stringify(logs));
+
+    // Also try to save to Firebase if available
+    if (window.firebaseApi) {
+        try {
+            window.firebaseApi.addActivityLog(logEntry).catch(err => {
+                console.log('Firebase log save failed, using localStorage only:', err);
+            });
+        } catch (err) {
+            console.log('Firebase not available for activity log');
+        }
+    }
+}
+
+function getActivityLogs(limit = 50) {
+    const logs = localStorage.getItem(ACTIVITY_LOG_KEY);
+    if (!logs) return [];
+    
+    try {
+        const parsedLogs = JSON.parse(logs);
+        return limit ? parsedLogs.slice(0, limit) : parsedLogs;
+    } catch (error) {
+        console.error('Error parsing activity logs:', error);
+        return [];
+    }
+}
+
+function clearActivityLogs() {
+    localStorage.removeItem(ACTIVITY_LOG_KEY);
+    
+    if (window.ux && window.ux.showToast) {
+        window.ux.showToast('ลบประวัติกิจกรรมแล้ว', 'success');
+    }
+}
+
+function exportActivityLogs() {
+    const logs = getActivityLogs();
+    
+    const exportData = {
+        version: '1.0',
+        timestamp: new Date().toISOString(),
+        totalEntries: logs.length,
+        logs: logs
+    };
+
+    const jsonString = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `activity-log-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    if (window.ux && window.ux.showToast) {
+        window.ux.showToast('ส่งออกประวัติกิจกรรมสำเร็จ', 'success');
+    }
+}
+
+function getActivityLogsSummary() {
+    const logs = getActivityLogs();
+    const summary = {
+        total: logs.length,
+        byAction: {},
+        today: 0,
+        thisWeek: 0,
+        thisMonth: 0
+    };
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    logs.forEach(log => {
+        const logDate = new Date(log.timestamp);
+        
+        // Count by action
+        summary.byAction[log.action] = (summary.byAction[log.action] || 0) + 1;
+        
+        // Count by time period
+        if (logDate >= today) {
+            summary.today++;
+        }
+        if (logDate >= weekAgo) {
+            summary.thisWeek++;
+        }
+        if (logDate >= monthAgo) {
+            summary.thisMonth++;
+        }
+    });
+
+    return summary;
+}
+
 // Export functions for use in other files
 window.ux = {
     showLoading,
@@ -656,5 +779,10 @@ window.ux = {
     showNotification,
     generateQRCode,
     generateQRCodeForURL,
-    downloadQRCode
+    downloadQRCode,
+    logActivity,
+    getActivityLogs,
+    clearActivityLogs,
+    exportActivityLogs,
+    getActivityLogsSummary
 };
