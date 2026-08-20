@@ -27,14 +27,40 @@ function setupSearchInput() {
     }
 }
 
-// Load history from Firebase
+// Load history from Firebase and localStorage
 async function loadHistory() {
     if (window.ux && window.ux.showLoading) {
         window.ux.showLoading();
     }
     try {
+        // Try to load from Firebase first
         const history = await firebaseApi.getRecords();
         allHistoryData = history;
+        
+        // Also load from localStorage (fallback records)
+        const localRecord = localStorage.getItem('lastEvaluationRecord');
+        if (localRecord) {
+            try {
+                const parsedRecord = JSON.parse(localRecord);
+                // Add a flag to identify it's from localStorage
+                parsedRecord.isLocal = true;
+                parsedRecord.id = 'local-' + Date.now();
+                parsedRecord.sequence_number = allHistoryData.length + 1;
+                
+                // Check if this record already exists in Firebase data (by timestamp)
+                const exists = allHistoryData.some(r => 
+                    r.timestamp === parsedRecord.timestamp && 
+                    r.start_prod_time === parsedRecord.start_prod_time
+                );
+                
+                if (!exists) {
+                    allHistoryData.unshift(parsedRecord); // Add to beginning
+                }
+            } catch (e) {
+                console.error('Error parsing localStorage record:', e);
+            }
+        }
+        
         filteredData = [...allHistoryData];
         renderTable();
         if (window.ux && window.ux.hideLoading) {
@@ -42,11 +68,35 @@ async function loadHistory() {
         }
     } catch (error) {
         console.error('Error loading history:', error);
+        
+        // Fallback: Load from localStorage only if Firebase fails
+        const localRecord = localStorage.getItem('lastEvaluationRecord');
+        if (localRecord) {
+            try {
+                const parsedRecord = JSON.parse(localRecord);
+                parsedRecord.isLocal = true;
+                parsedRecord.id = 'local-' + Date.now();
+                parsedRecord.sequence_number = 1;
+                allHistoryData = [parsedRecord];
+                filteredData = [...allHistoryData];
+                renderTable();
+            } catch (e) {
+                console.error('Error parsing localStorage record:', e);
+                allHistoryData = [];
+                filteredData = [];
+                renderTable();
+            }
+        } else {
+            allHistoryData = [];
+            filteredData = [];
+            renderTable();
+        }
+        
         if (window.ux && window.ux.hideLoading) {
             window.ux.hideLoading();
         }
         if (window.ux && window.ux.showToast) {
-            window.ux.showToast('เกิดข้อผิดพลาดในการโหลดข้อมูล', 'error');
+            window.ux.showToast('โหลดข้อมูลจาก localStorage (Firebase ไม่สามารถเข้าถึงได้)', 'warning');
         }
     }
 }
