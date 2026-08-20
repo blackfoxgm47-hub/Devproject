@@ -339,7 +339,37 @@ async function confirmDelete() {
 
     showLoading();
     try {
-        await firebaseApi.deleteRecord(deleteRecordId);
+        // Find the record in allHistoryData
+        const recordToDelete = allHistoryData.find(r => r.id === deleteRecordId);
+        
+        if (recordToDelete && recordToDelete.isLocal) {
+            // Delete from localStorage
+            localStorage.removeItem('lastEvaluationRecord');
+            console.log('Deleted record from localStorage');
+        } else {
+            // Try to delete from Firebase
+            try {
+                await firebaseApi.deleteRecord(deleteRecordId);
+                console.log('Deleted record from Firebase');
+            } catch (firebaseError) {
+                console.error('Firebase delete error:', firebaseError);
+                // If Firebase fails, check if it's in localStorage and remove it
+                const localRecord = localStorage.getItem('lastEvaluationRecord');
+                if (localRecord) {
+                    try {
+                        const parsed = JSON.parse(localRecord);
+                        if (parsed.timestamp === recordToDelete?.timestamp) {
+                            localStorage.removeItem('lastEvaluationRecord');
+                            console.log('Fallback: Deleted from localStorage');
+                        }
+                    } catch (e) {
+                        console.error('Error parsing localStorage:', e);
+                    }
+                }
+                // Don't throw error, continue with reload
+            }
+        }
+        
         closeDeleteModal();
         await loadHistory();
         hideLoading();
